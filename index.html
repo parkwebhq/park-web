@@ -4,23 +4,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Park</title>
-<meta name="description" content="Park is a Mac browser where every page is a card on an endless canvas. Join the waitlist.">
-<meta name="theme-color" content="#0b0c0d">
+<meta name="description" content="Park is a browser for Mac that gives every page its own spot on one endless canvas. Save yours on the waitlist.">
+<meta name="theme-color" content="#4045f2">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0b0c0d;
-    --raise: #111315;
-    --card: #15171a;
-    --line: rgba(255, 255, 255, 0.07);
-    --line-2: rgba(255, 255, 255, 0.12);
-    --ink: #f1f2f3;
-    --ink-2: #a3a8ae;
-    --ink-3: #62676d;
-    --ink-4: #34383c;
+    /* Parking-sign blue, cream type */
+    --blue: #4045f2;
+    --blue-hi: #4d52fb;
+    --blue-lo: #2f34d6;
+    --deep: #2c30c2;
+    --navy: #161a5c;
+    --ink: #fcfbef;
+    --ink-2: #e2e3f6;
+    --ink-3: #c3c6f7;
+    --sky: #b3b7fb;
+    --sun: #ffd84d;
+    --mint: #5fe0b0;
+    --line: rgba(252, 251, 239, 0.16);
+    --line-2: rgba(252, 251, 239, 0.3);
     /* The loading beam, as the app draws it */
     --b-head: #8cf2ff;
     --b-blue: rgba(115, 153, 255, 0.95);
@@ -31,34 +36,37 @@
     --max: 1280px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { background: var(--bg); color-scheme: dark; scroll-behavior: smooth; }
+  html { background: var(--blue); scroll-behavior: smooth; }
   body {
-    background: var(--bg);
+    background: var(--blue);
     color: var(--ink);
     font: 400 17px/1.5 "Inter", ui-sans-serif, system-ui, sans-serif;
     font-optical-sizing: auto;
-    font-feature-settings: "cv11", "ss03";
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
+  /* Print grain over everything */
+  body::after {
+    content: ""; position: fixed; inset: 0; z-index: 100; pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity: 0.32; mix-blend-mode: overlay;
+  }
   a { color: inherit; text-decoration: none; }
-  ::selection { background: rgba(140, 242, 255, 0.25); }
+  ::selection { background: rgba(252, 251, 239, 0.3); }
   .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
   .num { font-variant-numeric: tabular-nums; }
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
 
   /* ---------- Type ---------- */
-  .display {
-    font-weight: 900;
-    letter-spacing: -0.055em;
-    line-height: 0.88;
-  }
-  .display .dim { color: var(--ink-4); }
+  .display { font-weight: 900; letter-spacing: -0.05em; line-height: 0.9; }
+  .display .dim { color: var(--sky); }
   .eyebrow {
     display: inline-flex; align-items: center; gap: 12px;
-    font-size: 13px; font-weight: 500; letter-spacing: 0.02em; color: var(--ink-3);
+    font-size: 14px; font-weight: 500; color: var(--ink-2);
   }
-  .eyebrow b { color: var(--ink-2); font-weight: 500; }
-  .eyebrow::before { content: ""; width: 24px; height: 1px; background: var(--ink-4); }
+  .eyebrow b { color: var(--ink); font-weight: 600; }
+  .eyebrow::before { content: ""; width: 24px; height: 1.5px; border-radius: 1px; background: var(--line-2); }
 
   /* ---------- The beam ---------- */
   @property --a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
@@ -69,7 +77,7 @@
     position: absolute;
     inset: -1px;
     border-radius: inherit;
-    padding: 1px;
+    padding: 1.5px;
     background: conic-gradient(from var(--a),
       transparent 0 73%, var(--b-tail) 79%, var(--b-violet) 86%,
       var(--b-blue) 93%, var(--b-head) 99%, transparent 100%);
@@ -81,8 +89,12 @@
     z-index: 3;
     transition: opacity 0.8s var(--ease);
   }
-  .beam::after { padding: 2px; filter: blur(10px); }
+  .beam::after { padding: 2.5px; filter: blur(10px); }
   .beam.off::before, .beam.off::after { opacity: 0; }
+
+  /* ---------- Mark: a parking sign ---------- */
+  .mark { display: inline-flex; align-items: center; gap: 10px; font-weight: 900; font-size: 22px; letter-spacing: -0.045em; }
+  .mark svg { width: 26px; height: 26px; flex: none; }
 
   /* ---------- Top bar ---------- */
   .top {
@@ -91,25 +103,25 @@
     border-bottom: 1px solid transparent;
   }
   .top.scrolled {
-    background: rgba(11, 12, 13, 0.72);
+    background: rgba(64, 69, 242, 0.82);
     -webkit-backdrop-filter: saturate(140%) blur(18px);
     backdrop-filter: saturate(140%) blur(18px);
     border-color: var(--line);
   }
   .top .wrap { display: flex; align-items: center; justify-content: space-between; height: 72px; }
-  .mark { display: inline-flex; align-items: center; gap: 10px; font-weight: 900; font-size: 21px; letter-spacing: -0.04em; }
-  .mark svg { width: 22px; height: 22px; }
-  .top nav { display: flex; align-items: center; gap: 28px; font-size: 14px; color: var(--ink-2); }
+  .top nav { display: flex; align-items: center; gap: 28px; font-size: 15px; font-weight: 500; color: var(--ink-2); }
   .top nav a:not(.btn):hover { color: var(--ink); }
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    height: 40px; padding: 0 18px; border-radius: 999px;
-    background: var(--ink); color: var(--bg); font-weight: 600; font-size: 14px; letter-spacing: -0.01em;
-    transition: transform 0.35s var(--ease), background 0.2s;
+    height: 42px; padding: 0 20px; border-radius: 999px;
+    background: var(--ink); color: var(--blue-lo); font-weight: 700; font-size: 15px; letter-spacing: -0.01em;
+    box-shadow: 0 10px 24px -12px rgba(12, 14, 96, 0.6);
+    transition: transform 0.35s var(--ease), background 0.2s, box-shadow 0.35s var(--ease);
     border: 0; cursor: pointer; font-family: inherit;
   }
-  .btn:hover { background: #fff; transform: translateY(-1px); }
-  .btn.lg { height: 52px; padding: 0 24px; font-size: 16px; }
+  .btn:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 16px 30px -12px rgba(12, 14, 96, 0.7); }
+  .btn:active { transform: translateY(0) scale(0.98); }
+  .btn.lg { height: 56px; padding: 0 26px; font-size: 17px; }
   .btn svg { width: 14px; height: 14px; }
 
   /* ---------- Hero ---------- */
@@ -120,8 +132,8 @@
     overflow: hidden;
   }
   .stage {
-    position: absolute; top: 50%; right: -4vw;
-    width: max(1080px, 76vw); aspect-ratio: 16 / 10;
+    position: absolute; top: 50%; right: -7vw;
+    width: max(1040px, 72vw); aspect-ratio: 16 / 10;
     transform: translateY(-54%);
     -webkit-mask-image: radial-gradient(75% 80% at 58% 48%, #000 45%, transparent 100%);
     mask-image: radial-gradient(75% 80% at 58% 48%, #000 45%, transparent 100%);
@@ -131,22 +143,20 @@
   .layer.near { animation: float 26s ease-in-out -9s infinite alternate-reverse; }
   @keyframes float { to { translate: -18px 10px; } }
 
-  /* Zoomed-out cards become colour chips, as they do in the app */
+  /* Zoomed-out cards become chips, as they do in the app */
   .chip {
     position: absolute; border-radius: 3px; aspect-ratio: 4 / 5;
-    background: var(--c); opacity: 0;
+    background: var(--ink); opacity: 0;
     animation: fade 1.6s var(--ease) forwards;
   }
   @keyframes fade { to { opacity: var(--o); } }
 
   .card {
     position: absolute; aspect-ratio: 4 / 5; container-type: size;
-    border-radius: 14px; background: var(--card);
+    border-radius: 14px; background: #fffef8;
     box-shadow:
-      0 0 0 1px var(--line-2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05),
-      0 40px 80px -30px rgba(0, 0, 0, 0.8),
-      0 12px 24px -12px rgba(0, 0, 0, 0.6);
+      0 44px 80px -32px rgba(12, 14, 96, 0.65),
+      0 14px 28px -14px rgba(12, 14, 96, 0.45);
     opacity: 0; translate: 0 18px; scale: 0.94;
     transition: opacity 0.9s var(--ease), translate 1.1s var(--ease), scale 1.1s var(--ease);
   }
@@ -162,27 +172,27 @@
   .nav { display: flex; align-items: center; gap: 3cqw; flex: 0 0 auto; margin-bottom: 1.5cqw; }
   .nav .lg { width: 5cqw; height: 5cqw; border-radius: 1.4cqw; background: var(--c); }
   .nav .sp { flex: 1; }
-  .nav i { display: block; width: 8cqw; height: 1.6cqw; border-radius: 1cqw; background: rgba(255, 255, 255, 0.14); }
-  .nav .cta { width: 13cqw; height: 5cqw; border-radius: 3cqw; background: rgba(255, 255, 255, 0.85); }
+  .nav i { display: block; width: 8cqw; height: 1.6cqw; border-radius: 1cqw; background: rgba(22, 26, 92, 0.16); }
+  .nav .cta { width: 13cqw; height: 5cqw; border-radius: 3cqw; background: var(--navy); }
   .img { border-radius: 3cqw; background: linear-gradient(150deg, var(--c) 0%, var(--c2) 100%); position: relative; overflow: hidden; }
-  .img::after { content: ""; position: absolute; inset: 0; background: radial-gradient(80% 60% at 30% 20%, rgba(255,255,255,0.14), transparent 70%); }
-  .h { height: 4.6cqw; border-radius: 1.2cqw; background: rgba(255, 255, 255, 0.78); flex: 0 0 auto; }
-  .h.s { height: 3.4cqw; background: rgba(255, 255, 255, 0.5); }
-  .t { height: 1.9cqw; border-radius: 1cqw; background: rgba(255, 255, 255, 0.16); flex: 0 0 auto; }
+  .img::after { content: ""; position: absolute; inset: 0; background: radial-gradient(80% 60% at 30% 20%, rgba(255, 255, 255, 0.35), transparent 70%); }
+  .h { height: 4.6cqw; border-radius: 1.2cqw; background: rgba(22, 26, 92, 0.86); flex: 0 0 auto; }
+  .h.s { height: 3.4cqw; background: rgba(22, 26, 92, 0.5); }
+  .t { height: 1.9cqw; border-radius: 1cqw; background: rgba(22, 26, 92, 0.13); flex: 0 0 auto; }
   .row2 { display: flex; gap: 3cqw; flex: 1; min-height: 0; }
   .col { display: flex; flex-direction: column; gap: 3cqw; flex: 1; min-width: 0; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3cqw; flex: 1; min-height: 0; }
   .grid .img { border-radius: 2cqw; }
-  .side { flex: 0 0 22cqw; display: flex; flex-direction: column; gap: 3cqw; padding-right: 3cqw; border-right: 1px solid var(--line); }
-  .code { border-radius: 2cqw; background: rgba(0, 0, 0, 0.35); box-shadow: inset 0 0 0 1px var(--line); padding: 3.5cqw; display: flex; flex-direction: column; gap: 2.6cqw; }
-  .code .t { background: var(--c); opacity: 0.55; }
+  .side { flex: 0 0 22cqw; display: flex; flex-direction: column; gap: 3cqw; padding-right: 3cqw; border-right: 1px solid rgba(22, 26, 92, 0.08); }
+  .code { border-radius: 2cqw; background: var(--navy); padding: 3.5cqw; display: flex; flex-direction: column; gap: 2.6cqw; }
+  .code .t { background: var(--c); opacity: 0.9; }
   .center { align-items: center; text-align: center; }
-  .pill { width: 26cqw; height: 7cqw; border-radius: 4cqw; background: rgba(255, 255, 255, 0.9); flex: 0 0 auto; }
+  .pill { width: 26cqw; height: 7cqw; border-radius: 4cqw; background: var(--blue); flex: 0 0 auto; }
 
   /* Trails */
   .trails { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
   .trails path {
-    fill: none; stroke: rgba(255, 255, 255, 0.34); stroke-width: 0.19; stroke-linecap: round;
+    fill: none; stroke: rgba(252, 251, 239, 0.75); stroke-width: 0.22; stroke-linecap: round;
     stroke-dasharray: 1 1; stroke-dashoffset: 1;
     transition: stroke-dashoffset 0.7s cubic-bezier(0.65, 0, 0.35, 1);
   }
@@ -191,20 +201,21 @@
   .hero .veil {
     position: absolute; inset: 0; pointer-events: none;
     background:
-      linear-gradient(90deg, var(--bg) 0%, rgba(11,12,13,0.92) 22%, rgba(11,12,13,0.35) 46%, transparent 62%),
-      linear-gradient(0deg, var(--bg) 0%, rgba(11,12,13,0.6) 16%, transparent 42%);
+      linear-gradient(90deg, var(--blue) 0%, rgba(64, 69, 242, 0.92) 24%, rgba(64, 69, 242, 0.4) 46%, transparent 62%),
+      linear-gradient(0deg, var(--blue) 0%, rgba(64, 69, 242, 0.6) 16%, transparent 42%);
   }
   .hero .wrap { position: relative; z-index: 2; width: 100%; }
-  .hero h1 { font-size: clamp(60px, 10.4vw, 168px); margin: 28px 0 0; }
+  .hero h1 { font-size: clamp(54px, 9vw, 148px); margin: 28px 0 0; }
   .hero .lede {
-    max-width: 30em; margin-top: clamp(24px, 3vw, 36px);
+    max-width: 31em; margin-top: clamp(24px, 3vw, 36px);
     font-size: clamp(18px, 1.55vw, 21px); line-height: 1.5; color: var(--ink-2); letter-spacing: -0.011em;
   }
-  .hero .lede b { color: var(--ink); font-weight: 500; }
+  .hero .lede b { color: var(--ink); font-weight: 600; }
   .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 24px; margin-top: 40px; }
-  .actions .meta { font-size: 14px; color: var(--ink-3); display: inline-flex; align-items: center; gap: 10px; }
-  .live { width: 7px; height: 7px; border-radius: 50%; background: var(--b-head); box-shadow: 0 0 0 4px rgba(140, 242, 255, 0.12); animation: pulse 2.4s ease-in-out infinite; }
-  @keyframes pulse { 50% { box-shadow: 0 0 0 7px rgba(140, 242, 255, 0.04); } }
+  .actions .meta { font-size: 15px; font-weight: 500; color: var(--ink-2); display: inline-flex; align-items: center; gap: 10px; }
+  .live { width: 8px; height: 8px; border-radius: 50%; background: var(--sun); box-shadow: 0 0 0 4px rgba(255, 216, 77, 0.22); animation: pulse 2.4s ease-in-out infinite; flex: none; }
+  .live.go { background: var(--mint); box-shadow: 0 0 0 4px rgba(95, 224, 176, 0.22); }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 8px rgba(255, 216, 77, 0); } }
 
   .rise { opacity: 0; translate: 0 20px; animation: rise 1.1s var(--ease) forwards; }
   @keyframes rise { to { opacity: 1; translate: 0 0; } }
@@ -213,102 +224,112 @@
   section { padding: clamp(96px, 13vw, 184px) 0 0; }
   .head { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px; margin-bottom: clamp(36px, 5vw, 64px); }
   .head h2 { font-size: clamp(44px, 6.4vw, 100px); margin-top: 20px; }
-  .head .aside { font-size: 15px; color: var(--ink-3); max-width: 26em; text-align: right; line-height: 1.5; }
+  .head .aside { font-size: 15px; color: var(--ink-2); max-width: 26em; text-align: right; line-height: 1.5; }
 
   /* ---------- Media ---------- */
   .media {
     border-radius: clamp(16px, 1.8vw, 24px);
-    aspect-ratio: 16 / 10; background: var(--raise);
-    box-shadow: 0 0 0 1px var(--line), 0 60px 120px -60px rgba(0, 0, 0, 0.9);
+    aspect-ratio: 16 / 10; background: var(--deep);
+    box-shadow: inset 0 0 0 1px var(--line), 0 60px 120px -60px rgba(12, 14, 96, 0.8);
   }
   .media .inner { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; display: grid; place-items: center; }
   .media .inner::before {
     content: ""; position: absolute; inset: 0;
-    background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1.2px);
+    background-image: radial-gradient(rgba(252, 251, 239, 0.16) 1.2px, transparent 1.4px);
     background-size: 28px 28px; background-position: center;
     -webkit-mask-image: radial-gradient(60% 60% at 50% 50%, #000, transparent);
     mask-image: radial-gradient(60% 60% at 50% 50%, #000, transparent);
   }
   .media video { position: relative; width: 100%; height: 100%; object-fit: cover; display: block; }
-  .media .wait { position: relative; text-align: center; }
-  .media .wait strong { display: block; font-size: clamp(22px, 2.4vw, 32px); font-weight: 700; letter-spacing: -0.03em; }
-  .media .wait span { display: block; margin-top: 8px; color: var(--ink-3); font-size: 15px; }
+  .media .wait { position: relative; text-align: center; padding: 0 24px; }
+  .media .wait strong { display: block; font-size: clamp(24px, 2.6vw, 36px); font-weight: 800; letter-spacing: -0.035em; }
+  .media .wait span { display: block; margin-top: 8px; color: var(--ink-2); font-size: 16px; }
 
   /* ---------- Status ---------- */
   .overall {
     display: grid; grid-template-columns: auto 1fr; align-items: end; gap: clamp(28px, 5vw, 80px);
     padding: clamp(32px, 4vw, 48px); border-radius: clamp(16px, 1.8vw, 24px);
-    background: var(--raise); box-shadow: 0 0 0 1px var(--line);
+    background: rgba(252, 251, 239, 0.07); box-shadow: inset 0 0 0 1px var(--line);
   }
   .big { font-size: clamp(96px, 13vw, 200px); font-weight: 900; letter-spacing: -0.06em; line-height: 0.78; }
-  .big sup { font-size: 0.3em; font-weight: 500; color: var(--ink-3); vertical-align: top; letter-spacing: -0.02em; margin-left: 0.06em; }
-  .meter-wrap p { font-size: 15px; color: var(--ink-2); margin-bottom: 18px; display: flex; justify-content: space-between; gap: 16px; }
-  .meter-wrap p span { color: var(--ink-3); }
+  .big sup { font-size: 0.3em; font-weight: 600; color: var(--sky); vertical-align: top; letter-spacing: -0.02em; margin-left: 0.06em; }
+  .meter-wrap p { font-size: 15px; color: var(--ink); font-weight: 500; margin-bottom: 18px; display: flex; justify-content: space-between; gap: 16px; }
+  .meter-wrap p span { color: var(--ink-2); font-weight: 400; }
   .meter { display: grid; grid-template-columns: repeat(50, 1fr); gap: 3px; height: 44px; }
-  .meter i { border-radius: 2px; background: rgba(255, 255, 255, 0.07); transition: background 0.3s; }
+  .meter i { border-radius: 2px; background: rgba(252, 251, 239, 0.14); transition: background 0.3s; }
   .meter i.on { background: var(--ink); }
-  .meter i.edge { background: var(--b-head); box-shadow: 0 0 12px rgba(140, 242, 255, 0.6); }
+  .meter i.edge { background: var(--sun); box-shadow: 0 0 14px rgba(255, 216, 77, 0.7); }
 
   .rows { list-style: none; margin-top: 12px; }
   .row {
-    display: grid; grid-template-columns: minmax(0, 1.25fr) 116px minmax(0, 1fr) 48px; align-items: center;
+    display: grid; grid-template-columns: minmax(0, 1.25fr) 124px minmax(0, 1fr) 48px; align-items: center;
     gap: clamp(16px, 2.6vw, 40px); padding: 26px clamp(0px, 1vw, 12px); border-bottom: 1px solid var(--line);
   }
-  .row h3 { font-size: clamp(19px, 1.7vw, 22px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
-  .row p { color: var(--ink-3); font-size: 15px; margin-top: 4px; line-height: 1.45; }
-  .state { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); white-space: nowrap; }
-  .state::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ink-4); }
-  .state.polish::before { background: var(--b-head); box-shadow: 0 0 8px rgba(140, 242, 255, 0.7); }
-  .state.build::before { background: var(--ink); }
-  .bar { height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.07); overflow: hidden; }
+  .row h3 { font-size: clamp(19px, 1.7vw, 22px); font-weight: 700; letter-spacing: -0.025em; line-height: 1.2; }
+  .row p { color: var(--ink-2); font-size: 15px; margin-top: 4px; line-height: 1.45; }
+  .state { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
+  .state::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: rgba(252, 251, 239, 0.4); }
+  .state.polish::before { background: var(--mint); box-shadow: 0 0 10px rgba(95, 224, 176, 0.8); }
+  .state.build::before { background: var(--sun); box-shadow: 0 0 10px rgba(255, 216, 77, 0.7); }
+  .bar { height: 5px; border-radius: 3px; background: rgba(252, 251, 239, 0.14); overflow: hidden; }
   .bar i { display: block; height: 100%; width: 0; border-radius: inherit; background: var(--ink); transition: width 1.6s var(--ease); }
-  .pct { text-align: right; font-size: 15px; color: var(--ink-2); font-weight: 500; }
+  .pct { text-align: right; font-size: 15px; color: var(--ink); font-weight: 600; }
 
-  /* ---------- Sign-up ---------- */
+  /* ---------- Sign-up: the parking sign ---------- */
   .signup { padding-bottom: clamp(96px, 12vw, 160px); }
-  .panel {
+  .sign {
     position: relative; overflow: hidden;
-    border-radius: clamp(20px, 2.4vw, 32px); background: var(--raise);
-    box-shadow: 0 0 0 1px var(--line);
-    padding: clamp(40px, 7vw, 104px) clamp(24px, 6vw, 96px);
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 48px;
+    border-radius: clamp(24px, 2.6vw, 36px);
+    background: linear-gradient(165deg, var(--blue-hi), var(--blue-lo));
+    box-shadow: 0 50px 100px -40px rgba(12, 14, 96, 0.75), 0 18px 36px -18px rgba(12, 14, 96, 0.5);
+    padding: clamp(48px, 7vw, 104px) clamp(32px, 6vw, 96px);
   }
-  .panel::before {
-    content: ""; position: absolute; inset: -40% -10% auto; height: 90%;
-    background: conic-gradient(from 200deg at 50% 100%, transparent, rgba(255,102,179,0.10), rgba(179,102,255,0.10), rgba(115,153,255,0.10), rgba(140,242,255,0.12), transparent 60%);
-    filter: blur(60px); pointer-events: none;
+  .sign::before {
+    content: ""; position: absolute; inset: clamp(10px, 1.1vw, 14px); pointer-events: none;
+    border: clamp(3px, 0.35vw, 5px) solid var(--ink);
+    border-radius: calc(clamp(24px, 2.6vw, 36px) - clamp(10px, 1.1vw, 14px));
   }
-  .panel > * { position: relative; }
-  .panel h2 { font-size: clamp(52px, 8.4vw, 132px); margin-top: 20px; }
-  .panel .lede { margin-top: 24px; font-size: clamp(18px, 1.55vw, 21px); color: var(--ink-2); max-width: 28em; }
-  form { margin-top: clamp(36px, 4vw, 48px); max-width: 600px; }
+  .sign > * { position: relative; }
+  .sign h2 { font-size: clamp(48px, 7vw, 112px); margin-top: 20px; }
+  .sign .lede { margin-top: 24px; font-size: clamp(18px, 1.55vw, 21px); color: var(--ink-2); max-width: 26em; }
+  .sign .p {
+    font-size: clamp(220px, 26vw, 400px); font-weight: 900; line-height: 0.74; letter-spacing: -0.04em;
+    padding-right: clamp(0px, 2vw, 32px);
+    user-select: none;
+  }
+  form { margin-top: clamp(36px, 4vw, 48px); max-width: 580px; }
   .box {
     display: flex; align-items: center; gap: 8px; padding: 6px;
-    border-radius: 999px; background: var(--bg); box-shadow: 0 0 0 1px var(--line-2);
+    border-radius: 999px; background: #fffef8;
+    box-shadow: 0 20px 40px -20px rgba(12, 14, 96, 0.6);
   }
   .box input {
-    flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--ink);
-    font: 400 17px "Inter", sans-serif; letter-spacing: -0.01em; padding: 12px 8px 12px 20px;
+    flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--navy);
+    font: 500 17px "Inter", sans-serif; letter-spacing: -0.01em; padding: 12px 8px 12px 20px;
   }
-  .box input::placeholder { color: var(--ink-3); }
-  .box .btn { height: 48px; padding: 0 22px; font-size: 15px; }
-  .box .btn:disabled { opacity: 0.55; cursor: default; transform: none; }
+  .box input::placeholder { color: rgba(22, 26, 92, 0.42); }
+  .box .btn { height: 50px; padding: 0 24px; font-size: 16px; background: var(--blue); color: var(--ink); box-shadow: none; }
+  .box .btn:hover { background: var(--blue-hi); }
+  .box .btn:disabled { opacity: 0.6; cursor: default; transform: none; }
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-  .msg { margin-top: 14px; padding-left: 22px; font-size: 15px; }
+  .msg { margin-top: 14px; padding-left: 22px; font-size: 15px; font-weight: 500; }
   .msg:empty { display: none; }
-  .msg.err { color: #ff9ec4; }
-  .fine { margin-top: 16px; padding-left: 22px; color: var(--ink-3); font-size: 14px; }
+  .msg.err { color: #ffe27a; }
+  .fine { margin-top: 16px; padding-left: 22px; color: var(--ink-2); font-size: 14px; }
   .thanks { display: none; margin-top: clamp(36px, 4vw, 48px); }
   .sent form { display: none; }
   .sent .thanks { display: block; animation: rise 0.9s var(--ease); }
-  .thanks strong { display: flex; align-items: center; gap: 12px; font-size: clamp(24px, 2.4vw, 32px); letter-spacing: -0.03em; font-weight: 700; }
+  .thanks strong { display: flex; align-items: center; gap: 12px; font-size: clamp(26px, 2.6vw, 36px); letter-spacing: -0.035em; font-weight: 800; }
   .thanks p { color: var(--ink-2); font-size: 17px; margin-top: 8px; }
 
   /* ---------- Footer ---------- */
   footer { border-top: 1px solid var(--line); }
-  footer .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; justify-content: space-between; padding-top: 32px; padding-bottom: 40px; color: var(--ink-3); font-size: 14px; }
-  footer .mark { color: var(--ink); font-size: 18px; }
+  footer .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 32px; justify-content: space-between; padding-top: 32px; padding-bottom: 40px; color: var(--ink-2); font-size: 14px; }
+  footer .mark { color: var(--ink); font-size: 19px; }
+  footer .mark svg { width: 22px; height: 22px; }
   footer .l { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
-  footer nav { display: flex; gap: 24px; }
+  footer nav { display: flex; gap: 24px; font-weight: 500; }
   footer a:hover { color: var(--ink); }
 
   .reveal { opacity: 0; translate: 0 28px; transition: opacity 1.1s var(--ease), translate 1.1s var(--ease); }
@@ -317,16 +338,19 @@
   @media (max-width: 860px) {
     .top nav .hide { display: none; }
     .stage { width: 132vw; right: -22vw; top: 72px; transform: none; }
-    .meter-wrap p { flex-direction: column; gap: 2px; }
     .hero { align-items: flex-end; padding-top: 58vw; }
-    .hero .veil { background: linear-gradient(0deg, var(--bg) 0%, var(--bg) 42%, rgba(11,12,13,0.5) 68%, transparent 90%); }
+    .hero .veil { background: linear-gradient(0deg, var(--blue) 0%, var(--blue) 42%, rgba(64, 69, 242, 0.5) 68%, transparent 90%); }
     .head { grid-template-columns: 1fr; }
     .head .aside { text-align: left; }
     .overall { grid-template-columns: 1fr; }
+    .meter-wrap p { flex-direction: column; gap: 2px; }
     .row { grid-template-columns: 1fr auto; row-gap: 14px; }
     .row .state { grid-column: 2; grid-row: 1; align-self: start; margin-top: 3px; }
     .row .bar { grid-column: 1; }
     .row .pct { grid-column: 2; }
+    .sign { grid-template-columns: 1fr; padding: 56px 28px 40px; }
+    .sign { gap: 28px; }
+    .sign .p { order: -1; font-size: 120px; padding: 0; }
     .box { flex-direction: column; align-items: stretch; border-radius: 20px; }
     .box input { padding: 14px 14px; }
     .box .btn { border-radius: 14px; }
@@ -339,16 +363,21 @@
 </head>
 <body>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="sign" viewBox="0 0 24 24">
+    <rect width="24" height="24" rx="6" fill="#fcfbef"/>
+    <rect x="2" y="2" width="20" height="20" rx="4.4" fill="#4045f2"/>
+    <path fill="#fcfbef" fill-rule="evenodd" d="M7.5 6H12.4A4.1 4.1 0 0 1 12.4 14.2H10.5V18H7.5ZM10.5 8.6V11.6H12.2A1.5 1.5 0 0 0 12.2 8.6Z"/>
+  </symbol>
+</svg>
+
 <header class="top" id="top">
   <div class="wrap">
-    <a class="mark" href="#" aria-label="Park">
-      <svg viewBox="0 0 22 22" aria-hidden="true"><rect x="4" y="1.5" width="14" height="19" rx="4.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="7.5" y="5.5" width="7" height="2" rx="1" fill="currentColor" opacity=".55"/></svg>
-      park
-    </a>
+    <a class="mark" href="#" aria-label="Park"><svg aria-hidden="true"><use href="#sign"/></svg>park</a>
     <nav>
       <a class="hide" href="#look">First look</a>
       <a class="hide" href="#status">Progress</a>
-      <a class="btn" href="#join">Join the waitlist</a>
+      <a class="btn" href="#join">Save a spot</a>
     </nav>
   </div>
 </header>
@@ -362,16 +391,16 @@
     <div class="veil"></div>
     <div class="wrap">
       <span class="eyebrow rise" style="animation-delay:.1s"><span>A new browser for <b>Mac</b></span></span>
-      <h1 class="display rise" style="animation-delay:.2s">Pages,<br><span class="dim">not tabs.</span></h1>
+      <h1 class="display rise" style="animation-delay:.2s">Tabs had<br><span class="dim">a good run.</span></h1>
       <p class="lede rise" style="animation-delay:.35s">
-        Park puts every page on <b>one endless canvas</b>. Zoom out to see everything you have open.
-        Follow a link and the new page lands <b>right beside the old one</b>, joined by a thin line back.
+        Park gives every page <b>its own spot</b> on one endless canvas. Zoom out to see everything at once.
+        Follow a link and the new page <b>parks right beside the old one</b>, with a line back to where you came from.
       </p>
       <div class="actions rise" style="animation-delay:.5s">
-        <a class="btn lg" href="#join">Join the waitlist
-          <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 2v10M2.5 7.5 7 12l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <a class="btn lg" href="#join">Save my spot
+          <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 2v10M2.5 7.5 7 12l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
-        <span class="meta"><i class="live"></i>In development</span>
+        <span class="meta"><i class="live"></i>Under construction</span>
       </div>
     </div>
   </div>
@@ -382,14 +411,14 @@
       <div class="head reveal">
         <div>
           <span class="eyebrow"><b>01</b> First look</span>
-          <h2 class="display">See it <span class="dim">move.</span></h2>
+          <h2 class="display">Take it <span class="dim">for a spin.</span></h2>
         </div>
       </div>
       <div class="media beam reveal" id="media" data-src="media/park.mp4" data-poster="media/park-poster.jpg">
         <div class="inner">
           <div class="wait">
-            <strong>First look soon</strong>
-            <span>The first clip lands here.</span>
+            <strong>Pulling in soon.</strong>
+            <span>The first clip parks right here.</span>
           </div>
         </div>
       </div>
@@ -401,14 +430,14 @@
       <div class="head reveal">
         <div>
           <span class="eyebrow"><b>02</b> Progress</span>
-          <h2 class="display">Where it's <span class="dim">at.</span></h2>
+          <h2 class="display">Under <span class="dim">the hood.</span></h2>
         </div>
-        <p class="aside">Built in the open, one piece at a time.<br><span id="updated"></span></p>
+        <p class="aside">Real numbers, no vaporware.<br><span id="updated"></span></p>
       </div>
       <div class="overall reveal">
         <div class="big num" id="overall"><span>0</span><sup>%</sup></div>
         <div class="meter-wrap">
-          <p>Of the way to a small Mac beta <span id="count"></span></p>
+          <p>Of the way to the first beta <span id="count"></span></p>
           <div class="meter" id="meter" role="img"></div>
         </div>
       </div>
@@ -418,24 +447,27 @@
 
   <section id="join" class="signup">
     <div class="wrap">
-      <div class="panel reveal">
-        <span class="eyebrow"><b>03</b> Waitlist</span>
-        <h2 class="display">Get in <span class="dim">early.</span></h2>
-        <p class="lede">The beta starts small. Leave your email and you'll hear first.</p>
-        <form id="form" novalidate>
-          <div class="box beam off" id="box">
-            <label class="hp" aria-hidden="true">Leave this empty <input name="company" tabindex="-1" autocomplete="off"></label>
-            <input id="email" name="email" type="email" inputmode="email" autocomplete="email"
-                   placeholder="you@example.com" aria-label="Email address" required>
-            <button class="btn" type="submit" id="go">Join the waitlist</button>
+      <div class="sign reveal">
+        <div>
+          <span class="eyebrow"><b>03</b> Waitlist</span>
+          <h2 class="display">Spaces are<br><span class="dim">limited.</span></h2>
+          <p class="lede">The first beta is a small lot. Leave your email to get in line.</p>
+          <form id="form" novalidate>
+            <div class="box beam off" id="box">
+              <label class="hp" aria-hidden="true">Leave this empty <input name="company" tabindex="-1" autocomplete="off"></label>
+              <input id="email" name="email" type="email" inputmode="email" autocomplete="email"
+                     placeholder="you@example.com" aria-label="Email address" required>
+              <button class="btn" type="submit" id="go">Save my spot</button>
+            </div>
+            <p class="msg" id="msg" role="status" aria-live="polite"></p>
+            <p class="fine">A few short clips while you wait. No spam, no tickets, leave anytime.</p>
+          </form>
+          <div class="thanks" id="thanks">
+            <strong><i class="live go"></i>Spot saved.</strong>
+            <p>Keep an eye on your inbox. Park will honk when there's something new to see.</p>
           </div>
-          <p class="msg" id="msg" role="status" aria-live="polite"></p>
-          <p class="fine">A few short clips along the way, then your invite. Nothing else. One click to leave.</p>
-        </form>
-        <div class="thanks" id="thanks">
-          <strong><i class="live"></i>You're on the list.</strong>
-          <p>You'll hear from Park when there's something new to see.</p>
         </div>
+        <div class="p" aria-hidden="true">P</div>
       </div>
     </div>
   </section>
@@ -444,11 +476,8 @@
 <footer>
   <div class="wrap">
     <div class="l">
-      <a class="mark" href="#" aria-label="Park">
-        <svg viewBox="0 0 22 22" aria-hidden="true"><rect x="4" y="1.5" width="14" height="19" rx="4.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="7.5" y="5.5" width="7" height="2" rx="1" fill="currentColor" opacity=".55"/></svg>
-        park
-      </a>
-      <span>© 2026 Circa75 Media, LLC · Made by Jason Schuller</span>
+      <a class="mark" href="#" aria-label="Park"><svg aria-hidden="true"><use href="#sign"/></svg>park</a>
+      <span>© 2026 Circa75 Media, LLC · Made by Jason Schuller · Please park responsibly.</span>
     </div>
     <nav>
       <a href="#look">First look</a>
@@ -466,12 +495,12 @@
 {
   "updated": "2026-09-27",
   "features": [
-    { "name": "The canvas",   "note": "Pan and zoom through everything you have open.", "progress": 90 },
-    { "name": "Cards",        "note": "Every page keeps its picture, even zoomed right out.", "progress": 85 },
-    { "name": "Trails",       "note": "A thin line back to the page you came from.", "progress": 75 },
-    { "name": "The island",   "note": "A small toolbar that slides away while you read.", "progress": 80 },
-    { "name": "Sync",         "note": "Encrypted on your device. The server only holds ciphertext.", "progress": 65 },
-    { "name": "Beta build",   "note": "Signed, notarized and ready to send.", "progress": 15 }
+    { "name": "The canvas",   "note": "Room for every page you have open, and then some.", "progress": 90 },
+    { "name": "Cards",        "note": "Zoom way out and every page still looks like itself.", "progress": 85 },
+    { "name": "Trails",       "note": "A thin line back to wherever you came from. Breadcrumbs, but tidy.", "progress": 75 },
+    { "name": "The island",   "note": "A tiny toolbar that knows when to get out of the way.", "progress": 80 },
+    { "name": "Sync",         "note": "Encrypted on your Mac before it leaves. The server only sees gibberish.", "progress": 65 },
+    { "name": "Beta build",   "note": "Signed, sealed, delivered. Working on all three.", "progress": 15 }
   ]
 }
 </script>
@@ -492,12 +521,10 @@
   })();
 
   // ---------- The hero canvas ----------
-  // The app's chip colours, muted for the dark.
   const HUES = [
-    ["#3f6a70", "#1d2f33"], ["#7a5560", "#2c1e24"], ["#6f6444", "#2a261a"],
-    ["#5d4f78", "#221d2e"], ["#56694a", "#1f271b"], ["#4a5d7a", "#1b222e"]
+    ["#ffd84d", "#ff9a5c"], ["#7cc4ff", "#4045f2"], ["#5fe0b0", "#2fb6c9"],
+    ["#b49cff", "#ff9cc8"], ["#ff9a5c", "#ff6f91"], ["#b8ec6a", "#3fcf9a"]
   ];
-  const CHIPS = ["#7fb0b5", "#b98a93", "#b7a57c", "#a28ab8", "#95ad83", "#8499b3", "#b99a7d"];
 
   const T = {
     article: () => `
@@ -518,7 +545,7 @@
       <div class="h s" style="width:52%"></div>
       <div class="grid">${[0,1,2,3,4,5].map(i => `<div class="img" style="--c:${HUES[(i+2)%6][0]};--c2:${HUES[(i+2)%6][1]}"></div>`).join("")}</div>`,
     docs: () => `
-      <div class="nav"><span class="lg"></span><i></i><span class="sp"></span><i style="width:18cqw;height:4cqw;border-radius:2cqw;background:rgba(255,255,255,.08)"></i></div>
+      <div class="nav"><span class="lg"></span><i></i><span class="sp"></span><i style="width:18cqw;height:4cqw;border-radius:2cqw;background:rgba(22,26,92,.07)"></i></div>
       <div class="row2">
         <div class="side">${[60,80,50,70,90,55,75].map(w => `<div class="t" style="width:${w}%"></div>`).join("")}</div>
         <div class="col">
@@ -535,10 +562,10 @@
   const CARDS = [
     { id: "s", x: 33, y: 20, w: 18.5, t: "article", h: 0 },
     { id: "a", x: 59, y: 5,  w: 13,   t: "landing", h: 3, from: "s" },
-    { id: "b", x: 60, y: 45, w: 14.5, t: "docs",    h: 5, from: "s", loads: true },
-    { id: "e", x: 38, y: 66, w: 11.5, t: "gallery", h: 1, from: "s" },
+    { id: "b", x: 60, y: 45, w: 14.5, t: "docs",    h: 2, from: "s", loads: true },
+    { id: "e", x: 38, y: 66, w: 11.5, t: "gallery", h: 5, from: "s" },
     { id: "c", x: 80, y: 20, w: 11.5, t: "gallery", h: 4, from: "a" },
-    { id: "d", x: 82, y: 60, w: 10.5, t: "article", h: 2, from: "b" }
+    { id: "d", x: 82, y: 60, w: 10.5, t: "article", h: 1, from: "b" }
   ];
 
   (function stage() {
@@ -553,7 +580,7 @@
       if (x > 28 && x < 95 && y > 0 && y < 92 && rnd() < 0.7) continue;   // keep the middle for the story
       const c = document.createElement("i");
       c.className = "chip";
-      c.style.cssText = `left:${x}%;top:${y}%;width:${1.6 + rnd() * 2.4}%;--c:${CHIPS[Math.floor(rnd() * CHIPS.length)]};--o:${(0.08 + rnd() * 0.12).toFixed(2)};animation-delay:${(rnd() * 0.8).toFixed(2)}s`;
+      c.style.cssText = `left:${x}%;top:${y}%;width:${1.6 + rnd() * 2.4}%;--o:${(0.06 + rnd() * 0.12).toFixed(2)};animation-delay:${(rnd() * 0.8).toFixed(2)}s`;
       far.appendChild(c);
     }
 
@@ -639,9 +666,9 @@
 
     const list = document.getElementById("rows");
     data.features.forEach(f => {
-      const [cls, word] = f.progress >= 100 ? ["polish", "Done"]
+      const [cls, word] = f.progress >= 100 ? ["polish", "Parked"]
                         : f.progress >= 80 ? ["polish", "Polishing"]
-                        : f.progress >= 30 ? ["build", "Building"] : ["", "Starting"];
+                        : f.progress >= 30 ? ["build", "Building"] : ["", "Just started"];
       const li = document.createElement("li");
       li.className = "row reveal";
       li.dataset.p = f.progress;
@@ -658,10 +685,10 @@
     const big = document.getElementById("overall");
     big.dataset.p = avg;
     const meter = document.getElementById("meter");
-    meter.setAttribute("aria-label", `${avg}% of the way to a Mac beta`);
+    meter.setAttribute("aria-label", `${avg}% of the way to the first beta`);
     meter.innerHTML = "<i></i>".repeat(50);
     document.getElementById("count").textContent =
-      `${data.features.filter(f => f.progress >= 80).length} of ${data.features.length} nearly there`;
+      `${data.features.filter(f => f.progress >= 80).length} of ${data.features.length} nearly done`;
   })();
 
   // ---------- Reveal on scroll ----------
@@ -706,8 +733,8 @@
       msg.textContent = ""; msg.className = "msg";
       const value = email.value.trim();
       if (form.company.value) return;                  // a bot filled the hidden field
-      if (!valid(value)) { msg.textContent = "That email doesn't look right."; msg.classList.add("err"); email.focus(); return; }
-      go.disabled = true; go.textContent = "Joining…"; box.classList.remove("off");
+      if (!valid(value)) { msg.textContent = "That email looks a little off."; msg.classList.add("err"); email.focus(); return; }
+      go.disabled = true; go.textContent = "Saving…"; box.classList.remove("off");
       try {
         if (WAITLIST_ENDPOINT) {
           // Sent as a plain form post: Apps Script can't answer the
@@ -724,9 +751,9 @@
         }
         document.getElementById("join").classList.add("sent");
       } catch {
-        msg.textContent = "Something went wrong. Please try again.";
+        msg.textContent = "That didn't go through. Mind trying again?";
         msg.classList.add("err");
-        go.disabled = false; go.textContent = "Join the waitlist";
+        go.disabled = false; go.textContent = "Save my spot";
       }
     });
   })();

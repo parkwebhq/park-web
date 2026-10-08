@@ -507,8 +507,8 @@
 
 <script>
   // Where sign-ups go: the Google Apps Script web app URL (ends in /exec).
-  // See waitlist/README.md. Leave empty to test the page locally: the form
-  // then acts as if it worked and sends nothing.
+  // See waitlist/README.md. While it's empty, the form on localhost acts as
+  // if it worked and sends nothing; anywhere else it says the list isn't open.
   const WAITLIST_ENDPOINT = "";
 
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -734,6 +734,10 @@
       const value = email.value.trim();
       if (form.company.value) return;                  // a bot filled the hidden field
       if (!valid(value)) { msg.textContent = "That email looks a little off."; msg.classList.add("err"); email.focus(); return; }
+      if (!WAITLIST_ENDPOINT && location.hostname !== "localhost") {
+        msg.textContent = "The lot isn't open just yet. Check back soon.";
+        return;
+      }
       go.disabled = true; go.textContent = "Saving…"; box.classList.remove("off");
       try {
         if (WAITLIST_ENDPOINT) {

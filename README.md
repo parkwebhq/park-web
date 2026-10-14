@@ -5,8 +5,7 @@ endless canvas.
 
 | Path | What |
 | --- | --- |
-| `index.html` | The page. Dev status lives in the `status-data` block near the bottom. |
-| `media/` | Drop `park.mp4` and `park-poster.jpg` here and they fill the first-look frame. |
+| `index.html` | The page, including the scroll-driven "stroll" scene. Dev status lives in the `status-data` block near the bottom. |
 | `waitlist/` | The Google Apps Script that stores sign-ups in a Sheet, and how to set it up. |
 
 Static files, no build step. Served by GitHub Pages from `main` at

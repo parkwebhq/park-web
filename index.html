@@ -422,26 +422,60 @@
 
   /* ---------- What's in the park: the trailhead sign ---------- */
   .board {
-    position: relative; max-width: 940px; margin: 0 auto; color: var(--paper); border-radius: 24px;
+    position: relative; max-width: 1080px; margin: 0 auto; color: var(--paper); border-radius: 24px;
     background: var(--forest) var(--grain);
-    padding: clamp(30px, 4vw, 50px) clamp(24px, 4.4vw, 56px) clamp(16px, 2.4vw, 26px);
+    padding: clamp(30px, 4vw, 50px) clamp(24px, 4.4vw, 56px) clamp(26px, 3.4vw, 44px);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 4px rgba(16, 38, 29, 0.2), 0 50px 70px -46px rgba(16, 38, 29, 0.7);
   }
   .board::before { content: ""; position: absolute; inset: 10px; border-radius: 16px; border: 2px solid rgba(243, 241, 232, 0.42); pointer-events: none; }
+  .board :focus-visible { outline-color: var(--lime); }
   .board-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 20px; border-bottom: 2px solid rgba(243, 241, 232, 0.42); }
   .board-head .brand { font-size: clamp(32px, 3.6vw, 46px); gap: 6px; }
   .board-head .badge { width: 1.25em; }
   .board-head small { font: 700 12px/1.3 var(--sans); letter-spacing: 0.16em; text-transform: uppercase; color: rgba(243, 241, 232, 0.8); text-align: right; }
+  /* The forks: a fingerpost of trails down the left, and the chosen trail's features beside it */
+  .trailhead { display: grid; grid-template-columns: minmax(0, 290px) minmax(0, 1fr); gap: clamp(28px, 4vw, 52px); padding-top: clamp(24px, 3vw, 32px); }
+  .planks { display: flex; flex-direction: column; gap: 9px; }
+  /* How far the phone's row of planks fades at each end, registered so the fades can ease in and out */
+  @property --fade-l { syntax: "<length>"; inherits: false; initial-value: 0px; }
+  @property --fade-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
+  /* A plank is a sign board with a pointed end: the point is a square turned 45°, sitting on the right edge.
+     The colours are solid, so the point and the board don't double up where they overlap. */
+  .plank {
+    position: relative; display: flex; align-items: center; gap: 11px; height: 48px; margin-right: 24px; padding: 0 6px 0 15px;
+    border: 0; border-radius: 12px 3px 3px 12px; cursor: pointer; text-align: left;
+    background: #26533f; color: rgba(243, 241, 232, 0.88); font: 600 15px/1 var(--sans); letter-spacing: -0.01em;
+    transition: background 0.2s, color 0.2s, translate 0.45s var(--spring);
+  }
+  .plank::after { content: ""; position: absolute; top: 50%; right: -16.97px; width: 33.94px; height: 33.94px; background: inherit; border-radius: 0 6px 0 0; transform: translateY(-50%) rotate(45deg); }
+  .plank svg { width: 21px; height: 21px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .plank span, .plank .count { position: relative; z-index: 1; }
+  .plank span { flex: 1; white-space: nowrap; }
+  .plank .count { font: 600 12px/1 var(--sans); font-variant-numeric: tabular-nums; opacity: 0.55; }
+  .plank:hover { background: #2f5d49; }
+  .plank[aria-selected="true"] { background: var(--lime); color: var(--forest-3); translate: 6px 0; }
+  .plank[aria-selected="true"] .count { opacity: 0.7; }
+  /* Only the chosen trail takes up room. When you switch, the board eases to the new trail's height. */
+  .js .route:not(.on) { display: none; }
+  .routes.easing { overflow: hidden; transition: height 0.4s var(--ease); }
+  .route + .route { margin-top: 40px; }
+  .js .route + .route { margin-top: 0; }
+  .route .blurb { font-size: 16.5px; line-height: 1.5; color: rgba(243, 241, 232, 0.8); max-width: 36em; padding-bottom: 18px; border-bottom: 2px solid rgba(243, 241, 232, 0.2); }
   .ways { list-style: none; }
-  .ways li { display: grid; grid-template-columns: 56px minmax(0, 1fr) 44px; align-items: center; gap: clamp(14px, 2vw, 22px); padding: 20px 0; border-bottom: 1px solid rgba(243, 241, 232, 0.16); }
-  .ways li:last-child { border-bottom: 0; }
-  .pic { width: 56px; height: 56px; border-radius: 50%; background: var(--paper); color: var(--forest); display: grid; place-items: center; }
-  .pic svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-  .ways h3 { font-family: var(--serif); font-size: clamp(21px, 2vw, 26px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
-  .ways p { font-size: 15.5px; line-height: 1.45; color: rgba(243, 241, 232, 0.74); margin-top: 4px; }
-  .arrow { width: 44px; height: 44px; border-radius: 50%; background: var(--lime); color: var(--forest); display: grid; place-items: center; transition: transform 0.4s var(--spring); }
-  .arrow svg { width: 18px; height: 18px; rotate: var(--r); fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-  .ways li:hover .arrow { transform: scale(1.1); }
+  .ways li { padding: 15px 0; border-bottom: 1px solid rgba(243, 241, 232, 0.13); }
+  .ways li:last-child { border-bottom: 0; padding-bottom: 0; }
+  .ways h3 { font-family: var(--serif); font-size: clamp(19px, 1.7vw, 22px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.15; }
+  .ways p { font-size: 15px; line-height: 1.5; color: rgba(243, 241, 232, 0.74); margin-top: 4px; max-width: 42em; }
+  @media (min-width: 1240px) {
+    .ways { display: grid; grid-template-columns: 1fr 1fr; column-gap: 34px; }
+    .ways li, .ways li:last-child { border-bottom: 0; border-top: 1px solid rgba(243, 241, 232, 0.13); padding: 16px 0 14px; }
+    .ways li:nth-child(-n + 2) { border-top: 0; }
+  }
+  .ways kbd { font: 600 0.82em/1 var(--sans); letter-spacing: 0.02em; padding: 0.22em 0.42em; border-radius: 6px; background: rgba(243, 241, 232, 0.13); color: var(--paper); white-space: nowrap; }
+  .ways h3 kbd { font-size: 0.72em; vertical-align: 0.12em; }
+  /* Turning to a trail walks its features in, one after another */
+  .js .route.on .blurb, .js .route.on .ways li { animation: walk-in 0.5s var(--ease) backwards; animation-delay: calc(var(--i, 0) * 38ms); }
+  @keyframes walk-in { from { opacity: 0; translate: 12px 0; } }
 
   /* ---------- browse (v.) ---------- */
   .define { text-align: center; }
@@ -522,11 +556,20 @@
     .cap { width: 100%; height: 3em; text-align: left; white-space: normal; }
     .cap span { top: 0; bottom: auto; }
     .legend { gap: 10px; padding: 7px 10px; font-size: 10px; }
-    .ways li { grid-template-columns: 46px minmax(0, 1fr); padding: 18px 0; }
-    .pic { width: 46px; height: 46px; }
-    .pic svg { width: 24px; height: 24px; }
-    .arrow { display: none; }
     .board-head small { display: none; }
+    /* On a phone the planks become one swipeable row above the trail, with the next one peeking in */
+    .trailhead { grid-template-columns: 1fr; gap: 22px; }
+    .planks { flex-direction: row; gap: 4px; overflow-x: auto; scrollbar-width: none; padding: 2px 0 4px; transition: --fade-l 0.25s, --fade-r 0.25s;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--fade-l, 0px), #000 calc(100% - var(--fade-r, 0px)), transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 var(--fade-l, 0px), #000 calc(100% - var(--fade-r, 0px)), transparent); }
+    /* Each end fades only while there's more of the row to scroll that way */
+    .planks.more-l { --fade-l: 24px; }
+    .planks.more-r { --fade-r: 44px; }
+    .planks::-webkit-scrollbar { display: none; }
+    .plank { flex: none; height: 42px; margin-right: 21px; padding: 0 4px 0 12px; gap: 8px; font-size: 14px; }
+    .plank::after { width: 29.7px; height: 29.7px; right: -14.85px; }
+    .plank svg { width: 18px; height: 18px; }
+    .plank[aria-selected="true"] { translate: 0 0; }
     .panel { grid-template-columns: 1fr; padding: 40px 24px 36px; }
     .trailmap { order: -1; }
     .trailmap svg { width: min(70%, 300px); }
@@ -679,40 +722,114 @@
           <p class="eyebrow">The grounds</p>
           <h2 class="display">What's in the park.</h2>
         </div>
-        <p class="aside">What's built so far, and still growing.</p>
+        <p class="aside">Eight trails through everything built so far. Pick one.</p>
       </div>
       <div class="board reveal">
         <div class="board-head">
           <span class="brand"><span class="badge" data-badge="fresh"></span>park</span>
           <small>Trailhead<br>Est. 2026</small>
         </div>
-        <ul class="ways">
-          <li>
-            <span class="pic"><svg viewBox="0 0 28 28"><rect x="3.5" y="4.5" width="21" height="19" rx="4"/><rect x="7.5" y="8.5" width="5" height="6" rx="1.2"/><rect x="15.5" y="10.5" width="5" height="6" rx="1.2"/><rect x="9.5" y="16.5" width="4" height="4" rx="1"/></svg></span>
-            <div><h3>The canvas</h3><p>Wide-open space for every page you have open.</p></div>
-            <span class="arrow" style="--r:-135deg"><svg viewBox="0 0 18 18"><path d="M3 9h12M10 4l5 5-5 5"/></svg></span>
-          </li>
-          <li>
-            <span class="pic"><svg viewBox="0 0 28 28"><rect x="4.5" y="8" width="13" height="16" rx="2.5"/><path d="M9.5 4.5h11a3 3 0 0 1 3 3v12.5"/><path d="M8 13h6M8 16.5h4"/></svg></span>
-            <div><h3>Cards</h3><p>Zoom way out and every page still looks like itself.</p></div>
-            <span class="arrow" style="--r:-90deg"><svg viewBox="0 0 18 18"><path d="M3 9h12M10 4l5 5-5 5"/></svg></span>
-          </li>
-          <li>
-            <span class="pic"><svg viewBox="0 0 28 28"><circle cx="7" cy="20.5" r="2.6"/><circle cx="21" cy="7.5" r="2.6"/><path d="M9.6 19.6c5.2-1.4 2.6-9.2 8.8-11.2" stroke-dasharray="1.6 3"/></svg></span>
-            <div><h3>Trails</h3><p>Every page leaves a trail back to where you came from.</p></div>
-            <span class="arrow" style="--r:0deg"><svg viewBox="0 0 18 18"><path d="M3 9h12M10 4l5 5-5 5"/></svg></span>
-          </li>
-          <li>
-            <span class="pic"><svg viewBox="0 0 28 28"><rect x="3.5" y="10" width="21" height="8" rx="4"/><path d="M9 14h.01M14 14h.01M19 14h.01" stroke-width="2.6"/></svg></span>
-            <div><h3>The island</h3><p>A tiny toolbar that steps aside while you read.</p></div>
-            <span class="arrow" style="--r:-45deg"><svg viewBox="0 0 18 18"><path d="M3 9h12M10 4l5 5-5 5"/></svg></span>
-          </li>
-          <li>
-            <span class="pic"><svg viewBox="0 0 28 28"><rect x="6" y="12.5" width="16" height="11" rx="2.8"/><path d="M9.5 12.5V9.5a4.5 4.5 0 0 1 9 0v3"/><path d="M14 17v2"/></svg></span>
-            <div><h3>Sync</h3><p>Encrypted on your Mac before it leaves. The server only sees gibberish.</p></div>
-            <span class="arrow" style="--r:180deg"><svg viewBox="0 0 18 18"><path d="M3 9h12M10 4l5 5-5 5"/></svg></span>
-          </li>
-        </ul>
+        <!-- The forks: each plank turns the board to its trail. Edit a trail's features here; the counts follow. -->
+        <div class="trailhead">
+          <div class="planks" role="tablist" aria-label="Trails" aria-orientation="vertical">
+            <button class="plank" type="button" role="tab" id="plank-canvas" aria-controls="trail-canvas" aria-selected="true"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="4.5" width="21" height="19" rx="4"/><rect x="7.5" y="8.5" width="5" height="6" rx="1.2"/><rect x="15.5" y="10.5" width="5" height="6" rx="1.2"/><rect x="9.5" y="16.5" width="4" height="4" rx="1"/></svg><span>The canvas</span><b class="count">7</b></button>
+            <button class="plank" type="button" role="tab" id="plank-up-close" aria-controls="trail-up-close" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M17 5h6v6M11 23H5v-6M23 5l-7 7M5 23l7-7"/></svg><span>Up close</span><b class="count">5</b></button>
+            <button class="plank" type="button" role="tab" id="plank-island" aria-controls="trail-island" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="10" width="21" height="8" rx="4"/><path d="M9 14h.01M14 14h.01M19 14h.01" stroke-width="2.6"/></svg><span>The island</span><b class="count">4</b></button>
+            <button class="plank" type="button" role="tab" id="plank-spaces" aria-controls="trail-spaces" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="8.5" width="15" height="15" rx="3.5"/><path d="M9.5 4.5h11a3 3 0 0 1 3 3v11"/></svg><span>Spaces &amp; Peek</span><b class="count">6</b></button>
+            <button class="plank" type="button" role="tab" id="plank-everyday" aria-controls="trail-everyday" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="5.5" width="21" height="17" rx="4"/><rect x="13.5" y="13" width="7.5" height="6" rx="1.5"/></svg><span>Everyday</span><b class="count">7</b></button>
+            <button class="plank" type="button" role="tab" id="plank-private" aria-controls="trail-private" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 3.5l8.5 3.2v6.6c0 5.2-3.6 9.4-8.5 11.2-4.9-1.8-8.5-6-8.5-11.2V6.7z"/><path d="M10.6 14.2l2.4 2.4 4.4-4.8"/></svg><span>Private by design</span><b class="count">5</b></button>
+            <button class="plank" type="button" role="tab" id="plank-tools" aria-controls="trail-tools" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 6c.9 4.7 3.3 7.1 8 8-4.7.9-7.1 3.3-8 8-.9-4.7-3.3-7.1-8-8 4.7-.9 7.1-3.3 8-8z"/></svg><span>Power tools</span><b class="count">6</b></button>
+            <button class="plank" type="button" role="tab" id="plank-mac" aria-controls="trail-mac" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="5.5" y="6.5" width="17" height="12" rx="2"/><path d="M3 21.5h22"/></svg><span>Made for the Mac</span><b class="count">6</b></button>
+          </div>
+          <div class="routes">
+            <div class="route on" role="tabpanel" id="trail-canvas" aria-labelledby="plank-canvas" tabindex="0">
+              <p class="blurb">Pages you can see all at once, arrange, and come back to.</p>
+              <ul class="ways">
+                <li><h3>Every page is a card</h3><p>Pan and pinch across everything you have open. Each card is the page as you left it, sharp at any zoom.</p></li>
+                <li><h3>Links grow beside their page</h3><p>Open a link and the page you were on stays put. The new one lands next to it, joined by a trail.</p></li>
+                <li><h3>Threads you can walk</h3><p>Click a trail to cross it, or step down a thread with <kbd>⌘↓</kbd> and back up with <kbd>⌘↑</kbd>. Tidy Thread lines a page's children up beside it.</p></li>
+                <li><h3>Find by what a page says</h3><p>Search titles, addresses and the words on the page itself, indexed as you browse. Return flies you straight there.</p></li>
+                <li><h3>Old pages fold into stacks</h3><p>Cards you haven't touched in a while fold into stacks you can flip through. Nothing gets thrown away.</p></li>
+                <li><h3>Room for a crowd</h3><p>In our tests, a single Mac kept 50,000 cards fluid. Pages only go live when you open them, never just because you zoomed in.</p></li>
+                <li><h3>Right where you left it</h3><p>Relaunch and you're back where you were, with the same page open. <kbd>⌘⇧T</kbd> brings closed cards back, even after a relaunch.</p></li>
+              </ul>
+            </div>
+            <div class="route" role="tabpanel" id="trail-up-close" aria-labelledby="plank-up-close" tabindex="0">
+              <p class="blurb">Three places to be: the canvas, a page on it, or a page filling the window. One pinch moves between them.</p>
+              <ul class="ways">
+                <li><h3>Pinch to get closer</h3><p>Pinch toward a card and it snaps into its cozy frame with a haptic tick. Keep pinching and the page goes full.</p></li>
+                <li><h3>Pan into a page</h3><p>Bring a card to the middle at reading size and it shows its frame, then opens when you let go.</p></li>
+                <li><h3>Cozy keeps the context</h3><p>The canvas blurs around the page, and the site's icon, title, description and colours sit beside it. Click a colour to copy its hex.</p></li>
+                <li><h3>Full, framed by the canvas</h3><p>The page fills the window with a sliver of canvas around it, lifted off with a soft shadow.</p></li>
+                <li><h3>Snapping is optional</h3><p>Prefer free zoom? Switch snapping off, and pages settle to the nearest level when your fingers stop.</p></li>
+              </ul>
+            </div>
+            <div class="route" role="tabpanel" id="trail-island" aria-labelledby="plank-island" tabindex="0">
+              <p class="blurb">One floating bar in place of the toolbar, the address bar and the menus. It changes with what you're doing.</p>
+              <ul class="ways">
+                <li><h3>One field to find, ask or go</h3><p>Find cards, search your history, type an address or ask AI. Its buttons change with the moment, down to a key on sign-in forms.</p></li>
+                <li><h3>Put it anywhere</h3><p>Drag it to the top or bottom, left, centre or right, and it snaps into place. With springy motion on, it bends like jelly as you drag.</p></li>
+                <li><h3>No more pop-ups</h3><p>Dialogs, downloads, camera and microphone requests and confirmations open in the island's glass, not system windows. <kbd>Esc</kbd> closes them.</p></li>
+                <li><h3><kbd>⌘K</kbd> for everything</h3><p>Jump to any card in any Space, or run a command.</p></li>
+              </ul>
+            </div>
+            <div class="route" role="tabpanel" id="trail-spaces" aria-labelledby="plank-spaces" tabindex="0">
+              <p class="blurb">Separate canvases for separate parts of life, and links from other apps that wait their turn.</p>
+              <ul class="ways">
+                <li><h3>Separate canvases, separate logins</h3><p>Each new Space gets its own website data, so you can be signed in to the same site as different people in Work and Personal.</p></li>
+                <li><h3>Make each Space yours</h3><p>Give it a name, an icon or emoji, and its own colours. Switch with <kbd>⌘1</kbd> to <kbd>⌘9</kbd>, and move cards between Spaces.</p></li>
+                <li><h3>A Private Space that forgets</h3><p><kbd>⌘0</kbd> opens a Space that's never saved or synced, with no AI. Clear it and it's gone.</p></li>
+                <li><h3>Independent windows</h3><p>A new window is a whole second canvas, fully separate from the first.</p></li>
+                <li><h3>Peek before it's a card</h3><p>A link from Mail, Slack or anywhere else opens in a small window over what you're doing. <kbd>Esc</kbd> closes it and keeps nothing.</p></li>
+                <li><h3>Send it to the right Space</h3><p>One button turns a peek into a card, in whichever Space you pick. Sign in while peeking and you stay signed in.</p></li>
+              </ul>
+            </div>
+            <div class="route" role="tabpanel" id="trail-everyday" aria-labelledby="plank-everyday" tabindex="0">
+              <p class="blurb">The small things browsers usually get wrong on a canvas, or don't do at all.</p>
+              <ul class="ways">
+                <li><h3>Video in a mini player</h3><p>Leave a card while a long video plays and it carries on in a corner player. It's the same page, so nothing reloads.</p></li>
+                <li><h3>See what's making sound</h3><p>A card playing audio shows a little music bar with notes rising off it. Click to pause.</p></li>
+                <li><h3>Maps keep the trackpad</h3><p>Pages that pan and zoom themselves get your pinch and scroll, and Park remembers the site. <kbd>⌘</kbd> with a pinch always moves the canvas.</p></li>
+                <li><h3>Sign-in pop-ups behave</h3><p>“Sign in with…” windows float over their own page instead of opening a stray card.</p></li>
+                <li><h3>Camera and mic, per site</h3><p>Sites ask in the island, and Park remembers your answer for that site.</p></li>
+                <li><h3>Failures keep your place</h3><p>A page that won't load says why and offers Retry, and its card keeps the last good picture.</p></li>
+                <li><h3>Share and export</h3><p>Share any card or page, or export a whole Space as an image or a list of links.</p></li>
+              </ul>
+            </div>
+            <div class="route" role="tabpanel" id="trail-private" aria-labelledby="plank-private" tabindex="0">
+              <p class="blurb">Built in, and private by default.</p>
+              <ul class="ways">
+                <li><h3>A password manager in the island</h3><p>Fill and save logins, even inside frames, and generate strong passwords. Import from Chrome, Safari, Firefox, 1Password, Bitwarden or LastPass.</p></li>
+                <li><h3>Passwords never touch the server</h3><p>They live in your Keychain and travel between your Macs by iCloud Keychain. Touch ID guards every reveal, copy and export.</p></li>
+                <li><h3>Sealed sync</h3><p>Sign in with an emailed link or code and your canvas follows you to every Mac, sealed on the device with a key the server never holds.</p></li>
+                <li><h3>Trackers blocked</h3><p>Built-in blocking with EasyList and EasyPrivacy, and a per-site switch when you need it.</p></li>
+                <li><h3>Careful by default</h3><p>Passwords are never filled on unencrypted pages, private pages are never indexed, and web content is kept away from your files.</p></li>
+              </ul>
+            </div>
+            <div class="route" role="tabpanel" id="trail-tools" aria-labelledby="plank-tools" tabindex="0">
+              <p class="blurb">AI that builds on the canvas, opt-in and on your terms, and tools for people who build sites.</p>
+              <ul class="ways">
+                <li><h3>Find more like this</h3><p>AI names related pages and searches, and they fan out beside the page as a new thread, each with a note on why.</p></li>
+                <li><h3>Your model, even a local one</h3><p>Use Claude, OpenAI, or a model on your own Mac through Ollama or LM Studio. Keys stay in your Keychain.</p></li>
+                <li><h3>Asks before anything leaves</h3><p>Park shows exactly what would be sent and asks first. AI never runs in the Private Space.</p></li>
+                <li><h3>Design mode</h3><p>See a page's colours, fonts and spacing as editable rows at desktop, tablet and phone widths, then copy your changes out.</p></li>
+                <li><h3>Developer mode</h3><p>Flip a card over to see its page's DOM and console.</p></li>
+                <li><h3>Capture a page</h3><p>Grab the whole page, or drag a frame over just the part you want.</p></li>
+              </ul>
+            </div>
+            <div class="route" role="tabpanel" id="trail-mac" aria-labelledby="plank-mac" tabindex="0">
+              <p class="blurb">Native, not a web app in a wrapper.</p>
+              <ul class="ways">
+                <li><h3>Native through and through</h3><p>Swift, AppKit and Apple's own WebKit. It feels like a Mac app because it is one.</p></li>
+                <li><h3>A canvas of glass</h3><p>Frosted or sheer glass over your desktop, or solid. Light, dark or system, in a warm, neutral or cool tone.</p></li>
+                <li><h3>Motion you choose</h3><p>Springy, precise or reduced. Springy keeps its momentum when you change your mind mid-flight.</p></li>
+                <li><h3>Yours to tune</h3><p>Rebind any keyboard shortcut and pick from eight app icons.</p></li>
+                <li><h3>Accessible</h3><p>The canvas is reachable with VoiceOver and the keyboard, and reduced motion is honoured throughout.</p></li>
+                <li><h3>In English and French</h3><p>Every word in the app is localised.</p></li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -1264,6 +1381,63 @@
     addEventListener("resize", fit);
     document.fonts.ready.then(fit);
     fit();
+  })();
+
+  // ---------- The trailhead ----------
+  // Each plank is a fork: choosing one turns the board to that trail. Arrow keys, Home and End walk the planks.
+  (function trailhead() {
+    const tabs = [...document.querySelectorAll(".plank")];
+    const routes = tabs.map(t => document.getElementById(t.getAttribute("aria-controls")));
+    // The counts come from the trails themselves, and each feature knows its place in the walk-in
+    routes.forEach((r, i) => {
+      const items = r.querySelectorAll(".ways li");
+      items.forEach((li, j) => li.style.setProperty("--i", j + 1));
+      tabs[i].querySelector(".count").textContent = items.length;
+    });
+    const narrow = matchMedia("(max-width: 860px)"), box = document.querySelector(".routes");
+    function pick(i, focus) {
+      const from = box.offsetHeight;
+      tabs.forEach((t, j) => {
+        const on = j === i;
+        t.setAttribute("aria-selected", String(on));
+        t.tabIndex = on ? 0 : -1;
+        routes[j].classList.toggle("on", on);
+      });
+      // Ease from the old trail's height to the new one's, then let it size itself again
+      const to = box.offsetHeight;
+      if (!reduced && from && to !== from) {
+        box.style.height = `${from}px`;
+        box.classList.add("easing");
+        box.offsetHeight;
+        box.style.height = `${to}px`;
+        clearTimeout(box.t);
+        box.t = setTimeout(() => { box.classList.remove("easing"); box.style.height = ""; }, 450);
+      }
+      if (focus) tabs[i].focus({ preventScroll: true });
+      // In the phone's row of planks, slide the chosen one to the middle, clear of the fades
+      if (narrow.matches) tabs[i].scrollIntoView({ block: "nearest", inline: "center", behavior: reduced ? "auto" : "smooth" });
+    }
+    const row = document.querySelector(".planks");
+    const edges = () => {
+      const end = row.scrollWidth - row.clientWidth, on = narrow.matches;
+      row.classList.toggle("more-l", on && row.scrollLeft > 1);
+      row.classList.toggle("more-r", on && row.scrollLeft < end - 1);
+    };
+    row.addEventListener("scroll", edges, { passive: true });
+    addEventListener("resize", edges);
+    document.fonts.ready.then(edges);
+    edges();
+    tabs.forEach((t, i) => {
+      t.tabIndex = i === 0 ? 0 : -1;
+      t.addEventListener("click", () => pick(i));
+      t.addEventListener("keydown", e => {
+        const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+        const to = step ? (i + step + tabs.length) % tabs.length : e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : -1;
+        if (to < 0) return;
+        e.preventDefault();
+        pick(to, true);
+      });
+    });
   })();
 
   // ---------- Status ----------

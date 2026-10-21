@@ -331,15 +331,19 @@
   }
   .look::before { bottom: calc(100% - 1px); }
   .look::after { top: calc(100% - 1px); transform: scaleY(-1); }
-  .stroll { height: 460vh; }
+  /* How long the scene lasts: more height, slower scene */
+  .stroll { height: 1060vh; }
   .hold { position: sticky; top: 72px; height: calc(100svh - 72px); display: flex; flex-direction: column; padding: 26px 0 20px; isolation: isolate; }
-  /* Soft light across the canvas, held still while the scene plays */
+  /* Soft light across the canvas, held still while the scene plays. It fades out toward the top and bottom,
+     so it meets the flat lime around it, and the wavy borders, without a seam. */
   .hold::before {
     content: ""; position: absolute; inset: -72px 0 0; z-index: -1; pointer-events: none;
     background:
-      radial-gradient(46% 52% at 12% 16%, rgba(255, 255, 255, 0.44), transparent 72%),
-      radial-gradient(40% 48% at 90% 84%, rgba(47, 252, 203, 0.28), transparent 72%),
-      radial-gradient(36% 36% at 68% 6%, rgba(255, 255, 255, 0.2), transparent 70%);
+      radial-gradient(46% 52% at 12% 30%, rgba(255, 255, 255, 0.44), transparent 72%),
+      radial-gradient(40% 48% at 90% 68%, rgba(47, 252, 203, 0.28), transparent 72%),
+      radial-gradient(36% 36% at 68% 22%, rgba(255, 255, 255, 0.2), transparent 70%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 26%, #000 70%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 26%, #000 70%, transparent);
   }
   .hold > .wrap { width: 100%; flex: none; }
   .look .head { margin-bottom: 18px; }
@@ -364,6 +368,8 @@
   .fly { transform-origin: 0 0; }
   .fly .fav { position: absolute; left: 0; right: 0; top: 50%; translate: 0 -50%; aspect-ratio: 1; border-radius: inherit; background: var(--c); }
   .scene .pin { left: 790px; top: 406px; }
+  .back { position: absolute; inset: 0; }
+  .story { display: flex; flex-direction: column; gap: 3.6cqw; flex: none; }
 
   /* A crowded browser window */
   .win {
@@ -509,7 +515,7 @@
     .hint { position: relative; right: auto; bottom: auto; justify-content: center; margin: -6px var(--gutter) 0; }
     .head { grid-template-columns: 1fr; }
     .head .aside { text-align: left; }
-    .stroll { height: 400vh; }
+    .stroll { height: 900vh; }
     .hold { padding-top: 20px; }
     .walk { flex: 0 0 auto; width: 100%; aspect-ratio: 4 / 5; max-height: calc(100svh - 300px); margin: auto 0; }
     .title { font-size: 40px; }
@@ -602,6 +608,7 @@
                 <span>The usual.</span>
                 <span>Room to roam.</span>
                 <span>Go somewhere.</span>
+                <span>Get cozy.</span>
                 <span>Follow a link.</span>
                 <span>Zoom out.</span>
               </h2>
@@ -611,8 +618,9 @@
               <span><b>01</b>A strip of tiny icons, one of them playing music.</span>
               <span><b>02</b>Every page gets its own spot, out where you can see it.</span>
               <span><b>03</b>Type an address and the page lands as a card.</span>
-              <span><b>04</b>The new page opens beside it, with a trail back.</span>
-              <span><b>05</b>Everything stays right where you left it.</span>
+              <span><b>04</b>The card comes up close while everything else blurs.</span>
+              <span><b>05</b>The new page opens beside it, with a trail back.</span>
+              <span><b>06</b>Everything stays right where you left it.</span>
             </p>
           </div>
         </div>
@@ -864,12 +872,20 @@
           <div class="t" style="width:96%"></div><div class="t" style="width:60%"></div>
         </div>
       </div>`,
-    linked: () => `
-      <div class="nav"><span class="lg"></span><span class="sp"></span><i></i><i></i><i></i></div>
-      <div class="img" style="flex:0 0 38cqw"></div>
-      <div class="h" style="width:84%"></div>
-      <div class="t" style="width:100%"></div><div class="t link" style="width:58%"></div>
-      <div class="t" style="width:96%"></div><div class="t" style="width:72%"></div>`
+    // A long read for cozy mode: the link sits below the fold, so the page has to scroll to reach it
+    story: () => {
+      const lines = (ws, gap) => ws.map((w, i) => `<div class="t" style="width:${w}%${i === 0 && gap ? ";margin-top:2cqw" : ""}"></div>`).join("");
+      return `<div class="story">
+        <div class="nav"><span class="lg"></span><span class="sp"></span><i></i><i></i><i></i></div>
+        <div class="img" style="flex:0 0 42cqw"></div>
+        <div class="h" style="width:88%"></div><div class="h" style="width:62%"></div>
+        ${lines([100, 94, 97, 70])}${lines([92, 99, 88, 60], true)}
+        <div class="img" style="flex:0 0 36cqw;--c:${HUES[3][0]};--c2:${HUES[3][1]}"></div>
+        ${lines([96, 90])}<div class="t link" style="width:58%"></div>${lines([94, 81, 97, 66])}
+        <div class="h s" style="width:46%;margin-top:2cqw"></div>
+        ${lines([98, 93, 89, 72])}
+      </div>`;
+    }
   };
 
   // A trail from card a to card b, leaving the nearer edge of each.
@@ -1087,12 +1103,17 @@
     el("path", { d, class: "rule" }, strip);
     el("path", { class: "act", d: `M${x0 - 8} ${B}C${x0 - 8 + k} ${B} ${x0} ${B - 8 + k} ${x0} ${B - 8}V16C${x0} ${16 - k} ${x0 + 8 - k} 8 ${x0 + 8} 8H${x1 - 8}C${x1 - 8 + k} 8 ${x1} ${16 - k} ${x1} 16V${B - 8}C${x1} ${B - 8 + k} ${x1 + 8 - k} ${B} ${x1 + 8} ${B}` }, strip);
 
-    const card = (hue, tpl, cls, s) => {
+    // Everything but the card you're reading sits in one layer, so cozy mode can blur it all at once
+    const back = document.createElement("div");
+    back.className = "back";
+    canvas.insertBefore(back, svg);
+    back.appendChild(svg);
+    const card = (hue, tpl, cls, s, parent = back) => {
       const d = document.createElement("div");
       d.className = "card " + cls;
       d.style.cssText = `left:${s.x}px;top:${s.y}px;width:${s.w}px;border-radius:${radius(s.w)}px;--c:${HUES[hue][0]};--c2:${HUES[hue][1]}`;
       d.innerHTML = `<div class="pg">${T[tpl]()}</div>`;
-      canvas.insertBefore(d, pin);
+      parent.appendChild(d);
       return d;
     };
     const rect = s => ({ x: s.x, y: s.y, w: s.w, h: s.w * 1.25 });
@@ -1110,11 +1131,20 @@
     });
     flies.forEach(f => { if (f.from) f.trail = trail(byId[f.from], f); });
 
-    // The page that gets typed in, and the one a link leads to
+    // The page that gets typed in (a long read, on top of everything), and the one a link in it leads to
     const N1 = { x: 470, y: 250, w: 150 }, N2 = { x: 680, y: 400, w: 116 };
-    const new1 = card(0, "linked", "new beam off", N1), new2 = card(3, "gallery", "new beam off", N2);
+    // Cozy mode: the card comes up close, still 4:5, in the middle of the canvas
+    const COZY = { x: 265, y: 18.75, w: 470 }, K = COZY.w / N1.w;
+    const new1 = card(0, "story", "new beam off", N1, canvas), new2 = card(3, "gallery", "new beam off", N2);
+    back.appendChild(pin);
+    const page1 = new1.firstElementChild, story = page1.firstElementChild;
     const link = new1.querySelector(".link"), linkTrail = trail(N1, N2);
-    const tx = N1.x + link.offsetLeft + link.offsetWidth * 0.45, ty = N1.y + link.offsetTop + link.offsetHeight / 2;
+    // How far the page scrolls in cozy mode, in card widths (cqw): far enough to bring the link 60% of the way down
+    const cq = N1.w / 100, mid = link.offsetTop + link.offsetHeight / 2;
+    const S = Math.min(mid / cq - 75, (story.offsetTop + story.offsetHeight) / cq - 118);
+    // Where the pointer rests while the page scrolls under it, and where it clicks: the link, once it's in view
+    const rx = COZY.x + COZY.w * 0.74, ry = COZY.y + COZY.w * 0.7;
+    const tx = COZY.x + (link.offsetLeft + link.offsetWidth * 0.45) * K, ty = COZY.y + (mid - S * cq) * K;
 
     const seg = (p, a, b) => Math.min(1, Math.max(0, (p - a) / (b - a)));
     const out = t => 1 - Math.pow(1 - t, 3);
@@ -1124,12 +1154,12 @@
 
     function render(p) {
       // The window dissolves as its tabs lift off onto the canvas
-      const wf = 1 - seg(p, 0.14, 0.26);
+      const wf = 1 - seg(p, 0.12, 0.22);
       win.style.opacity = wf;
       win.style.transform = `scale(${0.96 + 0.04 * wf})`;
       win.style.visibility = wf ? "" : "hidden";
       flies.forEach(f => {
-        const t = out(seg(p, 0.15 + f.tab * 0.006, 0.35 + f.tab * 0.006));
+        const t = out(seg(p, 0.12 + f.tab * 0.005, 0.3 + f.tab * 0.005));
         const s = lerp(TAB_VIS / f.w, 1, t);
         const x = lerp(TAB_X + f.tab * TAB_W, f.x, t), y = lerp(TAB_Y, f.y, t);
         // Scaled uniformly, so the stroke and corners are re-sized to stay 1px and 2px–r on screen.
@@ -1142,46 +1172,57 @@
         f.el.style.setProperty("--g", grow);
         f.fav.style.opacity = 1 - grow;
         f.pg.style.opacity = seg(t, 0.45, 0.9);
-        if (f.trail) f.trail.style.strokeDashoffset = 1 - out(seg(p, 0.40 + f.tab * 0.004, 0.47 + f.tab * 0.004));
+        if (f.trail) f.trail.style.strokeDashoffset = 1 - out(seg(p, 0.31 + f.tab * 0.0025, 0.36 + f.tab * 0.0025));
       });
       // The canvas dims and a URL bar comes forward to take an address
-      const bar = out(seg(p, 0.50, 0.55)) * (1 - out(seg(p, 0.655, 0.69)));
+      const bar = out(seg(p, 0.43, 0.47)) * (1 - out(seg(p, 0.545, 0.575)));
       urlbar.style.opacity = bar;
       urlbar.style.transform = `scale(${0.97 + 0.03 * bar})`;
       canvas.style.opacity = 1 - 0.6 * bar;
-      const n = p < 0.665 ? Math.round(seg(p, 0.565, 0.645) * URL.length) : URL.length;
+      const n = p < 0.555 ? Math.round(seg(p, 0.48, 0.535) * URL.length) : URL.length;
       typed.textContent = URL.slice(0, n);
-      caret.classList.toggle("on", p > 0.5 && p < 0.665);
+      caret.classList.toggle("on", p > 0.43 && p < 0.555);
       // The page lands as a card
-      const n1 = out(seg(p, 0.665, 0.715)), hover = seg(p, 0.83, 0.845) * (1 - seg(p, 0.93, 0.95));
+      const n1 = out(seg(p, 0.555, 0.59));
       new1.style.opacity = n1;
-      new1.style.transform = `scale(${(0.9 + 0.1 * n1) * (1 + 0.03 * hover)})`;
-      new1.firstElementChild.style.opacity = seg(p, 0.76, 0.80);
-      new1.classList.toggle("off", p < 0.665 || p > 0.80);
-      // The pointer finds a link and follows it
-      const ct = inout(seg(p, 0.72, 0.83));
-      const cx = lerp(1010, tx, ct), cy = lerp(650, ty, ct) - Math.sin(ct * Math.PI) * 70;
-      const press = seg(p, 0.845, 0.855) * (1 - seg(p, 0.86, 0.875));
-      cursor.style.opacity = seg(p, 0.72, 0.74) * (1 - seg(p, 0.93, 0.95));
+      new1.style.transform = `scale(${0.9 + 0.1 * n1})`;
+      page1.style.opacity = seg(p, 0.59, 0.615);
+      new1.classList.toggle("off", p < 0.555 || p > 0.615);
+      // Cozy mode: the card comes up close and everything else blurs. The page scrolls; after the click it settles back.
+      const cz = inout(seg(p, 0.62, 0.675)) * (1 - inout(seg(p, 0.875, 0.91)));
+      const w = lerp(N1.w, COZY.w, cz);
+      new1.style.left = `${lerp(N1.x, COZY.x, cz)}px`;
+      new1.style.top = `${lerp(N1.y, COZY.y, cz)}px`;
+      new1.style.width = `${w}px`;
+      new1.style.borderRadius = `${radius(w)}px`;
+      new1.style.boxShadow = cz ? `0 ${10 + 30 * cz}px ${18 + 54 * cz}px -12px rgba(54, 74, 6, 0.55)` : "";
+      story.style.transform = `translateY(${(-S * inout(seg(p, 0.69, 0.75))).toFixed(2)}cqw)`;
+      back.style.filter = cz > 0.001 ? `blur(${(6 * cz).toFixed(2)}px)` : "";
+      back.style.opacity = 1 - 0.3 * cz;
+      // The pointer arrives and the page scrolls under it; then it finds the link further down and follows it
+      const enter = inout(seg(p, 0.665, 0.7)), go = inout(seg(p, 0.76, 0.82));
+      const cx = lerp(lerp(1010, rx, enter), tx, go), cy = lerp(lerp(650, ry, enter), ty, go) - Math.sin(go * Math.PI) * 40;
+      const press = seg(p, 0.835, 0.845) * (1 - seg(p, 0.85, 0.865));
+      cursor.style.opacity = seg(p, 0.665, 0.68) * (1 - seg(p, 0.865, 0.885));
       cursor.style.transform = `translate(${cx - 5}px, ${cy - 3}px) scale(${1 - 0.15 * press})`;
-      const rt = seg(p, 0.85, 0.90);
+      const rt = seg(p, 0.84, 0.875);
       ring.style.transform = `translate(${tx}px, ${ty}px) scale(${0.2 + rt})`;
       ring.style.opacity = rt > 0 && rt < 1 ? 1 - rt : 0;
-      link.classList.toggle("hot", p > 0.83);
-      // A trail to the next page
-      linkTrail.style.strokeDashoffset = 1 - out(seg(p, 0.855, 0.905));
-      const n2 = out(seg(p, 0.885, 0.925));
+      link.classList.toggle("hot", p > 0.82 && p < 0.9);
+      // Back on the canvas, a trail runs to the new page
+      linkTrail.style.strokeDashoffset = 1 - out(seg(p, 0.905, 0.935));
+      const n2 = out(seg(p, 0.92, 0.95));
       new2.style.opacity = n2;
       new2.style.transform = `scale(${0.9 + 0.1 * n2})`;
-      new2.firstElementChild.style.opacity = seg(p, 0.95, 0.98);
-      new2.classList.toggle("off", p < 0.885 || p > 0.98);
+      new2.firstElementChild.style.opacity = seg(p, 0.95, 0.97);
+      new2.classList.toggle("off", p < 0.92 || p > 0.97);
       // You are here, and the key fades in as you zoom out to take it all in
-      const drop = seg(p, 0.93, 0.965);
+      const drop = seg(p, 0.94, 0.965);
       pin.style.opacity = drop;
       pin.style.transform = `translateY(${(1 - out(drop)) * -26}px)`;
-      canvas.style.transform = `scale(${1 - zoom * out(seg(p, 0.95, 1))})`;
-      legend.style.opacity = seg(p, 0.955, 0.99);
-      const idx = p < 0.05 ? 0 : p < 0.15 ? 1 : p < 0.5 ? 2 : p < 0.72 ? 3 : p < 0.95 ? 4 : 5;
+      canvas.style.transform = `scale(${1 - zoom * out(seg(p, 0.96, 1))})`;
+      legend.style.opacity = seg(p, 0.965, 0.995);
+      const idx = p < 0.04 ? 0 : p < 0.12 ? 1 : p < 0.42 ? 2 : p < 0.615 ? 3 : p < 0.76 ? 4 : p < 0.94 ? 5 : 6;
       caps.forEach((c, i) => c.classList.toggle("on", i === idx));
       titles.forEach((c, i) => c.classList.toggle("on", i === idx));
     }
@@ -1198,10 +1239,20 @@
       urlbar.style.left = `${500 - bw / 2}px`;
       update();
     }
+    // Scroll (0–1 through the track) → scene time. The slow and flat stretches are rests: the crowded window,
+    // the canvas once every tab has landed, the new card, a moment in cozy mode, and the finished canvas,
+    // held before the section unpins.
+    const PACE = [[0, 0], [0.025, 0.04], [0.1, 0.11], [0.31, 0.4], [0.36, 0.43], [0.48, 0.6], [0.51, 0.62], [0.56, 0.675], [0.65, 0.755], [0.68, 0.76], [0.8, 0.91], [0.86, 0.965], [0.9, 1], [1, 1]];
+    const pace = s => {
+      for (let i = 1; i < PACE.length; i++) {
+        const [s1, p1] = PACE[i];
+        if (s <= s1) { const [s0, p0] = PACE[i - 1]; return p0 + (p1 - p0) * (s - s0) / (s1 - s0); }
+      }
+      return 1;
+    };
     function update() {
-      // The last stretch of the track holds the finished scene before it unpins.
       const r = track.getBoundingClientRect(), len = Math.max(1, track.offsetHeight - innerHeight);
-      render(reduced ? 1 : Math.min(1, Math.max(0, -r.top / len) / 0.92));
+      render(reduced ? 1 : pace(Math.min(1, Math.max(0, -r.top / len))));
       // The header takes on the band's colour while it's over it
       const b = look.getBoundingClientRect();
       top.classList.toggle("on-band", b.top < 60 && b.bottom > 60);

@@ -499,7 +499,9 @@
   .panel .fine, .panel .thanks p { color: #33503f; }
   .panel .box { box-shadow: 0 0 0 1px rgba(16, 38, 29, 0.14), 0 16px 30px -18px rgba(54, 74, 6, 0.55); }
   .trailmap { position: relative; display: grid; justify-items: center; gap: 10px; }
-  .trailmap svg { width: min(100%, 440px); height: auto; overflow: visible; }
+  /* The trail map is only a picture. Its sheen is a big rectangle cut to shape by a mask, and masks don't stop clicks,
+     so the picture ignores them. Otherwise it would sit over the form's button beside it. */
+  .trailmap svg { width: min(100%, 440px); height: auto; overflow: visible; pointer-events: none; }
   .trailmap .you .halo { transform-box: fill-box; transform-origin: center; animation: halo 2.4s ease-out infinite; }
   .trailmap figcaption { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; justify-content: center; text-align: center; color: var(--on-lime); font-size: 16px; font-weight: 500; }
   .trailmap figcaption b { font-family: var(--serif); font-weight: 700; font-size: clamp(34px, 3.2vw, 46px); letter-spacing: -0.03em; color: var(--ink); line-height: 1; }

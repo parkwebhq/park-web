@@ -419,6 +419,16 @@
   .legend .k-card { width: 10px; height: 12px; border-radius: 2px; background: var(--card); box-shadow: 0 0 0 1px var(--line-2); }
   .legend .k-trail { width: 18px; height: 2.4px; background: radial-gradient(circle, var(--forest) 1.2px, transparent 1.5px) 0 50% / 6px 2.4px repeat-x; }
   .legend .k-here { width: 9px; height: 9px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 2px #fff, 0 0 0 2.6px var(--line-2); }
+  /* On a phone the stroll is drawn in a taller 600 × 700 space instead (the script adds .tall below 861px):
+     a narrower window, a bigger address bar, and a pin that stays readable at phone size */
+  .scene.tall { width: 600px; height: 700px; }
+  .scene.tall .canvas { transform-origin: 50% 40%; }
+  .scene.tall .win { left: 20px; top: 120px; width: 560px; height: 460px; }
+  .scene.tall .win-page { height: 344px; padding-top: 22px; }
+  .scene.tall .win-col { width: 420px; }
+  .scene.tall .pin { left: 502px; top: 506px; scale: 1.5; transform-origin: 50% calc(100% - 9px); }
+  .scene.tall .urlbar { top: 314px; height: 72px; padding: 0 26px; border-radius: 18px; font-size: 24px; }
+  .scene.tall .urlbar .caret { height: 28px; }
 
   /* ---------- What's in the park: the trailhead sign ---------- */
   .board {
@@ -553,7 +563,6 @@
     .head .aside { text-align: left; }
     .stroll { height: 900vh; }
     .hold { padding-top: 20px; }
-    .walk { flex: 0 0 auto; width: 100%; aspect-ratio: 4 / 5; max-height: calc(100svh - 300px); margin: auto 0; }
     .title { font-size: 40px; }
     .cap { width: 100%; height: 3em; text-align: left; white-space: normal; }
     .cap span { top: 0; bottom: auto; }
@@ -1201,6 +1210,32 @@
     { id: "B1", x: 330, y: 520, w: 52 }, { id: "B2", x: 396, y: 514, w: 56, from: "B1" }, { x: 462, y: 522, w: 50, from: "B2" },
     { id: "F", x: 952, y: 40, w: 46 }, { x: 954, y: 128, w: 44, from: "F" }
   ];
+  // On a phone the stroll is drawn in a taller 600 × 700 space, so a portrait frame shows all of it:
+  // the same cards in the same order, with the same trails between them, placed for a narrower canvas.
+  const SPOTS_TALL = [
+    { x: 172, y: 24, w: 52 }, { x: 234, y: 18, w: 56 }, { x: 300, y: 26, w: 50 }, { x: 360, y: 20, w: 54 },
+    { x: 186, y: 104, w: 54 }, { x: 250, y: 98, w: 58 }, { x: 318, y: 102, w: 50 }, { x: 378, y: 96, w: 56 },
+    { id: "L", x: 40, y: 300, w: 66 },
+    { x: 10, y: 212, w: 46, from: "L" }, { x: 72, y: 196, w: 50, from: "L" }, { x: 138, y: 214, w: 48, from: "L" },
+    { x: 146, y: 300, w: 50, from: "L" }, { x: 12, y: 410, w: 50, from: "L" }, { x: 86, y: 440, w: 48, from: "L" },
+    { id: "R", x: 480, y: 300, w: 64 }, { x: 412, y: 206, w: 50, from: "R" }, { x: 536, y: 212, w: 48, from: "R" }, { x: 528, y: 410, w: 50, from: "R" },
+    { id: "B1", x: 96, y: 560, w: 50 }, { id: "B2", x: 160, y: 552, w: 54, from: "B1" }, { x: 226, y: 562, w: 48, from: "B2" },
+    { id: "F", x: 520, y: 30, w: 44 }, { x: 522, y: 108, w: 42, from: "F" }
+  ];
+  // The two ways the stroll is drawn: wide is the original 1000 × 625 scene, tall is the phone's.
+  // win = where the window sits; slot, tabW, tabVis = the tab strip; n1, n2 = the typed-in page and the one
+  // its link opens; cozy = where n1 comes up close; enter = where the pointer comes in from;
+  // pad = room kept around the scene; align = where it sits in a taller frame (0 top, 0.5 middle).
+  const WIDE = {
+    w: 1000, h: 625, spots: SPOTS, win: { x: 0, y: 36, w: 1000 }, slot: 74, tabW: 34, tabVis: 11,
+    n1: { x: 470, y: 250, w: 150 }, n2: { x: 680, y: 400, w: 116 }, cozy: { x: 265, y: 18.75, w: 470 },
+    enter: [1010, 650], cursor: 1, ring: 1, bar: 560
+  };
+  const TALL = {
+    w: 600, h: 700, spots: SPOTS_TALL, win: { x: 20, y: 120, w: 560 }, slot: 70, tabW: 20, tabVis: 9,
+    n1: { x: 225, y: 260, w: 150 }, n2: { x: 400, y: 500, w: 108 }, cozy: { x: 50, y: 38, w: 500 },
+    enter: [620, 740], cursor: 1.6, ring: 1.5, bar: 480, zoom: 0.1, pad: 18, align: 0.38
+  };
 
   (function stroll() {
     const $ = id => document.getElementById(id);
@@ -1209,21 +1244,10 @@
     const pin = $("walkPin"), legend = $("legend"), top = $("top");
     const typed = urlbar.querySelector(".typed"), caret = urlbar.querySelector(".caret");
     const caps = [...$("cap").children], titles = [...$("title").children];
-    // Tabs sit in 34px slots after the window lights; each favicon is an 11px square centred in its slot
-    // and in the 44px strip. The first tab is the active one.
-    const TAB_W = 34, TAB_VIS = 11, SLOT = 74, ACTIVE = 0, URL = "something.com";
-    const TAB_X = 1 + SLOT + TAB_W / 2 - TAB_VIS / 2, TAB_Y = 37 + 22 - TAB_VIS * 1.25 / 2;
+    const ACTIVE = 0, URL = "something.com";
     const radius = w => 3 + w * 0.05;
 
     $("wincol").innerHTML = T.article();
-
-    // The tab strip: dividers between the idle tabs, and the active tab as one shape with the toolbar,
-    // rounded at the top and filleted out at the feet (8px, drawn as quarter-circle cubics).
-    const strip = $("strip"), x0 = SLOT + ACTIVE * TAB_W - 2, x1 = x0 + TAB_W + 4, B = 43.5, k = 4.4;
-    let d = `M0 ${B}H${x0 - 8}M${x1 + 8} ${B}H998`;
-    for (let i = 0; i < SPOTS.length - 1; i++) if (i !== ACTIVE - 1 && i !== ACTIVE) d += `M${SLOT + TAB_W + 0.5 + i * TAB_W} 14V30`;
-    el("path", { d, class: "rule" }, strip);
-    el("path", { class: "act", d: `M${x0 - 8} ${B}C${x0 - 8 + k} ${B} ${x0} ${B - 8 + k} ${x0} ${B - 8}V16C${x0} ${16 - k} ${x0 + 8 - k} 8 ${x0 + 8} 8H${x1 - 8}C${x1 - 8 + k} 8 ${x1} ${16 - k} ${x1} 16V${B - 8}C${x1} ${B - 8 + k} ${x1 + 8 - k} ${B} ${x1 + 8} ${B}` }, strip);
 
     // Everything but the card you're reading sits in one layer, so cozy mode can blur it all at once
     const back = document.createElement("div");
@@ -1240,33 +1264,64 @@
     };
     const rect = s => ({ x: s.x, y: s.y, w: s.w, h: s.w * 1.25 });
     const trail = (a, b) => footpath(svg, edgePath(rect(a), rect(b)));
+    const strip = $("strip");
 
-    // Each tab flies to a spot; the order is scrambled so the flights cross.
-    const byId = {};
-    const flies = SPOTS.map((s, n) => {
-      const tab = (n * 7) % SPOTS.length;
-      const node = card(n % 6, ["article", "gallery", "docs", "landing"][n % 4], "fly", s);
-      node.insertAdjacentHTML("beforeend", `<i class="fav"></i>`);
-      const f = { ...s, el: node, tab, pg: node.firstElementChild, fav: node.lastElementChild };
-      if (s.id) byId[s.id] = f;
-      return f;
-    });
-    flies.forEach(f => { if (f.from) f.trail = trail(byId[f.from], f); });
+    // Everything the layout decides. build() draws it for the wide scene or the tall one,
+    // and again whenever the frame crosses between them.
+    let L, flies = [], new1, new2, page1, story, link, linkTrail, cq, S, rx, ry, tx, ty, TAB_W, TAB_VIS, TAB_X, TAB_Y;
+    function build(next) {
+      L = next;
+      scene.classList.toggle("tall", L === TALL);
+      svg.setAttribute("viewBox", `0 0 ${L.w} ${L.h}`);
+      strip.replaceChildren();
+      flies.forEach(f => f.el.remove());
+      if (new1) { new1.remove(); new2.remove(); }
+      svg.querySelectorAll(":scope > path").forEach(p => p.remove());
+      svg.querySelector("defs").replaceChildren();
 
-    // The page that gets typed in (a long read, on top of everything), and the one a link in it leads to
-    const N1 = { x: 470, y: 250, w: 150 }, N2 = { x: 680, y: 400, w: 116 };
-    // Cozy mode: the card comes up close, still 4:5, in the middle of the canvas
-    const COZY = { x: 265, y: 18.75, w: 470 }, K = COZY.w / N1.w;
-    const new1 = card(0, "story", "new beam off", N1, canvas), new2 = card(3, "gallery", "new beam off", N2);
-    back.appendChild(pin);
-    const page1 = new1.firstElementChild, story = page1.firstElementChild;
-    const link = new1.querySelector(".link"), linkTrail = trail(N1, N2);
-    // How far the page scrolls in cozy mode, in card widths (cqw): far enough to bring the link 60% of the way down
-    const cq = N1.w / 100, mid = link.offsetTop + link.offsetHeight / 2;
-    const S = Math.min(mid / cq - 75, (story.offsetTop + story.offsetHeight) / cq - 118);
-    // Where the pointer rests while the page scrolls under it, and where it clicks: the link, once it's in view
-    const rx = COZY.x + COZY.w * 0.74, ry = COZY.y + COZY.w * 0.7;
-    const tx = COZY.x + (link.offsetLeft + link.offsetWidth * 0.45) * K, ty = COZY.y + (mid - S * cq) * K;
+      // Tabs sit in slots after the window lights; each favicon is a small square centred in its slot
+      // and in the 44px strip. The first tab is the active one.
+      const SLOT = L.slot;
+      TAB_W = L.tabW; TAB_VIS = L.tabVis;
+      TAB_X = L.win.x + 1 + SLOT + TAB_W / 2 - TAB_VIS / 2; TAB_Y = L.win.y + 1 + 22 - TAB_VIS * 1.25 / 2;
+
+      // The tab strip: dividers between the idle tabs, and the active tab as one shape with the toolbar,
+      // rounded at the top and filleted out at the feet (8px, drawn as quarter-circle cubics).
+      const end = L.win.w - 2, x0 = SLOT + ACTIVE * TAB_W - 2, x1 = x0 + TAB_W + 4, B = 43.5, k = 4.4;
+      strip.setAttribute("viewBox", `0 0 ${end} 44`);
+      let d = `M0 ${B}H${x0 - 8}M${x1 + 8} ${B}H${end}`;
+      for (let i = 0; i < L.spots.length - 1; i++) if (i !== ACTIVE - 1 && i !== ACTIVE) d += `M${SLOT + TAB_W + 0.5 + i * TAB_W} 14V30`;
+      el("path", { d, class: "rule" }, strip);
+      el("path", { class: "act", d: `M${x0 - 8} ${B}C${x0 - 8 + k} ${B} ${x0} ${B - 8 + k} ${x0} ${B - 8}V16C${x0} ${16 - k} ${x0 + 8 - k} 8 ${x0 + 8} 8H${x1 - 8}C${x1 - 8 + k} 8 ${x1} ${16 - k} ${x1} 16V${B - 8}C${x1} ${B - 8 + k} ${x1 + 8 - k} ${B} ${x1 + 8} ${B}` }, strip);
+
+      // Each tab flies to a spot; the order is scrambled so the flights cross.
+      const byId = {};
+      flies = L.spots.map((s, n) => {
+        const tab = (n * 7) % L.spots.length;
+        const node = card(n % 6, ["article", "gallery", "docs", "landing"][n % 4], "fly", s);
+        node.insertAdjacentHTML("beforeend", `<i class="fav"></i>`);
+        const f = { ...s, el: node, tab, pg: node.firstElementChild, fav: node.lastElementChild };
+        if (s.id) byId[s.id] = f;
+        return f;
+      });
+      flies.forEach(f => { if (f.from) f.trail = trail(byId[f.from], f); });
+
+      // The page that gets typed in (a long read, on top of everything), and the one a link in it leads to.
+      // Cozy mode brings the first one up close, still 4:5, in the middle of the canvas.
+      const N1 = L.n1, N2 = L.n2, COZY = L.cozy, K = COZY.w / N1.w;
+      new1 = card(0, "story", "new beam off", N1, canvas); new2 = card(3, "gallery", "new beam off", N2);
+      back.appendChild(pin);
+      page1 = new1.firstElementChild; story = page1.firstElementChild;
+      link = new1.querySelector(".link"); linkTrail = trail(N1, N2);
+      // How far the page scrolls in cozy mode, in card widths (cqw): far enough to bring the link 60% of the way down
+      cq = N1.w / 100;
+      const mid = link.offsetTop + link.offsetHeight / 2;
+      S = Math.min(mid / cq - 75, (story.offsetTop + story.offsetHeight) / cq - 118);
+      // Where the pointer rests while the page scrolls under it, and where it clicks: the link, once it's in view
+      rx = COZY.x + COZY.w * 0.74; ry = COZY.y + COZY.w * 0.7;
+      tx = COZY.x + (link.offsetLeft + link.offsetWidth * 0.45) * K; ty = COZY.y + (mid - S * cq) * K;
+    }
+    build(innerWidth < 861 ? TALL : WIDE);
 
     const seg = (p, a, b) => Math.min(1, Math.max(0, (p - a) / (b - a)));
     const out = t => 1 - Math.pow(1 - t, 3);
@@ -1275,6 +1330,7 @@
     let zoom = 0.1;      // how far the last beat zooms out; set by fit() so a narrow frame still shows the last page
 
     function render(p) {
+      const N1 = L.n1, COZY = L.cozy;
       // The window dissolves as its tabs lift off onto the canvas
       const wf = 1 - seg(p, 0.12, 0.22);
       win.style.opacity = wf;
@@ -1323,12 +1379,12 @@
       back.style.opacity = 1 - 0.3 * cz;
       // The pointer arrives and the page scrolls under it; then it finds the link further down and follows it
       const enter = inout(seg(p, 0.665, 0.7)), go = inout(seg(p, 0.76, 0.82));
-      const cx = lerp(lerp(1010, rx, enter), tx, go), cy = lerp(lerp(650, ry, enter), ty, go) - Math.sin(go * Math.PI) * 40;
+      const cx = lerp(lerp(L.enter[0], rx, enter), tx, go), cy = lerp(lerp(L.enter[1], ry, enter), ty, go) - Math.sin(go * Math.PI) * 40;
       const press = seg(p, 0.835, 0.845) * (1 - seg(p, 0.85, 0.865));
       cursor.style.opacity = seg(p, 0.665, 0.68) * (1 - seg(p, 0.865, 0.885));
-      cursor.style.transform = `translate(${cx - 5}px, ${cy - 3}px) scale(${1 - 0.15 * press})`;
+      cursor.style.transform = `translate(${cx - 5}px, ${cy - 3}px) scale(${L.cursor * (1 - 0.15 * press)})`;
       const rt = seg(p, 0.84, 0.875);
-      ring.style.transform = `translate(${tx}px, ${ty}px) scale(${0.2 + rt})`;
+      ring.style.transform = `translate(${tx}px, ${ty}px) scale(${L.ring * (0.2 + rt)})`;
       ring.style.opacity = rt > 0 && rt < 1 ? 1 - rt : 0;
       link.classList.toggle("hot", p > 0.82 && p < 0.9);
       // Back on the canvas, a trail runs to the new page
@@ -1349,16 +1405,20 @@
       titles.forEach((c, i) => c.classList.toggle("on", i === idx));
     }
 
-    // Wide frames show the whole scene; a tall phone frame is covered, which crops the sides.
+    // Each layout is drawn whole in its frame: the wide scene on a desktop, the tall one on a phone.
     function fit() {
+      const want = innerWidth < 861 ? TALL : WIDE;
+      if (want !== L) build(want);
       const W = walk.clientWidth, H = walk.clientHeight;
-      const k = innerWidth < 861 ? Math.max(W / 1000, H / 625) : Math.min(W / 1000, H / 625);
-      zoom = 1 - Math.min(0.9, W / k / 820);
-      scene.style.transform = `translate(${(W - 1000 * k) / 2}px, ${(H - 625 * k) / 2}px) scale(${k})`;
+      const pad = 2 * (L.pad || 0), k = Math.min(W / (L.w + pad), H / (L.h + pad)), y0 = (H - L.h * k) * (L.align ?? 0.5);
+      zoom = L.zoom ?? 1 - Math.min(0.9, W / k / 820);
+      scene.style.transform = `translate(${(W - L.w * k) / 2}px, ${y0}px) scale(${k})`;
+      // On a phone the key sits just under the scene when there's room for it
+      legend.style.bottom = L === TALL ? `${Math.max(10, H - y0 - L.h * k - legend.offsetHeight - 14)}px` : "";
       // The URL bar fits the visible part of the scene, clear of the edges
-      const bw = Math.min(560, (W / k) * 0.76);
+      const bw = Math.min(L.bar, (W / k) * 0.76);
       urlbar.style.width = `${bw}px`;
-      urlbar.style.left = `${500 - bw / 2}px`;
+      urlbar.style.left = `${L.w / 2 - bw / 2}px`;
       update();
     }
     // Scroll (0–1 through the track) → scene time. The slow and flat stretches are rests: the crowded window,
@@ -1379,7 +1439,7 @@
       const b = look.getBoundingClientRect();
       top.classList.toggle("on-band", b.top < 60 && b.bottom > 60);
     }
-    if (reduced) { track.style.height = "auto"; hold.style.position = "static"; hold.style.height = "auto"; walk.style.height = "62vw"; }
+    if (reduced) { track.style.height = "auto"; hold.style.position = "static"; hold.style.height = "auto"; walk.style.height = innerWidth < 861 ? "116vw" : "62vw"; }
     addEventListener("scroll", update, { passive: true });
     addEventListener("resize", fit);
     document.fonts.ready.then(fit);

@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Park · A new browser for Mac</title>
-<meta name="description" content="Park is a new browser for Mac. Every page gets its own spot on one wide-open canvas, every link leaves a trail, and everything stays right where you left it.">
+<meta name="description" content="Park is a new browser for Mac. Spaces, a command bar and quick peeks at links, on one wide-open canvas where every page has its place and the links you branch off keep a trail back.">
 <meta name="theme-color" content="#f3f1e8">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://parkweb.co/">
 <meta property="og:title" content="Park · Take your tabs to the park">
-<meta property="og:description" content="A new browser for Mac. Every page gets its own spot on one wide-open canvas, and everything stays right where you left it.">
+<meta property="og:description" content="A new browser for Mac. Spaces, a command bar and quick peeks at links, on one wide-open canvas where every page has its place.">
 <meta property="og:image" content="https://parkweb.co/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -314,6 +314,11 @@
   .sent .reward { animation: slap 0.8s var(--spring) 0.15s backwards; rotate: -8deg; }
   .thanks strong { display: block; font-family: var(--serif); font-size: clamp(26px, 2.5vw, 34px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
   .thanks p { color: var(--ink-2); font-size: 16px; margin-top: 6px; }
+  .arc-link { margin-top: 22px; font-size: 15px; font-weight: 500; color: var(--ink-2); }
+  .arc-link a { color: var(--forest); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; text-decoration-color: rgba(19, 70, 52, 0.35); transition: text-decoration-color 0.2s; }
+  .arc-link a:hover { text-decoration-color: var(--forest); }
+  /* Read aloud, hidden on screen */
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
   /* ---------- Sections ---------- */
   section { padding: clamp(96px, 12vw, 168px) 0 0; }
@@ -353,7 +358,7 @@
   .title > span { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transition: opacity 0.4s; }
   .title > span.on { opacity: 1; }
   .cap { position: relative; width: 27em; max-width: 100%; height: 1.5em; font-size: 15px; line-height: 1.5; color: var(--on-lime); text-align: right; white-space: nowrap; }
-  .cap span { position: absolute; left: 0; right: 0; bottom: 0; opacity: 0; transition: opacity 0.4s; }
+  .cap span { position: absolute; left: 0; right: 0; bottom: 0; opacity: 0; transition: opacity 0.4s; white-space: normal; text-wrap: balance; }
   .cap span.on { opacity: 1; }
   .cap b { font: var(--mono); letter-spacing: 0.08em; color: var(--forest-2); margin-right: 10px; vertical-align: 1px; }
   /* The scene gets the full width of the band; it is drawn in a fixed 1000 × 625 space and scaled to fit */
@@ -487,6 +492,26 @@
   .js .route.on .blurb, .js .route.on .ways li { animation: walk-in 0.5s var(--ease) backwards; animation-delay: calc(var(--i, 0) * 38ms); }
   @keyframes walk-in { from { opacity: 0; translate: 12px 0; } }
 
+  /* ---------- Coming from Arc: what carries over ---------- */
+  /* Each row runs from the Arc name down a dotted trail to its Park counterpart */
+  .moves { list-style: none; display: grid; grid-template-columns: minmax(10em, 0.8fr) max-content minmax(0, 1.4fr); column-gap: clamp(16px, 2.4vw, 32px); border-bottom: 1px solid var(--line); }
+  .moves li { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: baseline; padding: 20px 0; border-top: 1px solid var(--line); }
+  .moves .key { padding: 0 0 12px; border-top: 0; font: 600 11px/1 var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
+  .moves .key span:last-child { grid-column: 2 / -1; }
+  .moves .from { display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: 500; color: var(--ink-2); }
+  .moves .from::after { content: ""; order: 1; flex: 1; min-width: 28px; height: 4px; background: radial-gradient(circle, var(--forest) 1.5px, transparent 1.9px) 0 50% / 9px 4px repeat-x; opacity: 0.55; }
+  .moves .from::before { content: ""; order: 2; flex: none; width: 9px; height: 9px; margin-left: -6px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 1.5px var(--forest); }
+  .moves b { font-family: var(--serif); font-weight: 700; font-size: clamp(21px, 1.8vw, 25px); letter-spacing: -0.02em; line-height: 1.15; color: var(--ink); }
+  .moves p { font-size: 16px; line-height: 1.5; color: var(--ink-2); }
+  .moves kbd { font: 600 0.82em/1 var(--sans); letter-spacing: 0.02em; padding: 0.22em 0.42em; border-radius: 6px; background: rgba(16, 38, 29, 0.07); color: var(--ink); white-space: nowrap; }
+  /* Narrower screens: the description moves under the Park name */
+  @media (max-width: 1100px) {
+    .moves { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr); }
+    .moves li { row-gap: 4px; }
+    .moves li p { grid-column: 2; }
+    .moves .key span:last-child { grid-column: 2; }
+  }
+
   /* ---------- browse (v.) ---------- */
   .define { text-align: center; }
   .define .word { font-family: var(--serif); font-weight: 700; font-size: clamp(36px, 4.2vw, 58px); letter-spacing: -0.03em; line-height: 1; }
@@ -540,7 +565,7 @@
   footer .wrap { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 28px 40px; padding-top: clamp(48px, 6vw, 72px); padding-bottom: 40px; }
   footer .brand { color: var(--paper); }
   .grassy { margin-top: 18px; font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 3.2vw, 44px); letter-spacing: -0.03em; line-height: 1.05; color: var(--lime); }
-  footer nav { display: flex; gap: 26px; font-size: 15px; font-weight: 500; }
+  footer nav { display: flex; flex-wrap: wrap; gap: 10px 26px; font-size: 15px; font-weight: 500; }
   footer nav a:hover { color: var(--paper); }
   .legal { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px 24px; padding-top: 24px; border-top: 1px solid rgba(243, 241, 232, 0.14); font-size: 14px; }
   .social { display: flex; align-items: center; gap: 10px; }
@@ -565,7 +590,7 @@
     .hold { padding-top: 20px; }
     .title { font-size: 40px; }
     .cap { width: 100%; height: 3em; text-align: left; white-space: normal; }
-    .cap span { top: 0; bottom: auto; }
+    .cap span { top: 0; bottom: auto; text-wrap: wrap; }
     .legend { gap: 10px; padding: 7px 10px; font-size: 10px; }
     .board-head small { display: none; }
     /* On a phone the planks become one swipeable row above the trail, with the next one peeking in */
@@ -584,6 +609,12 @@
     .panel { grid-template-columns: 1fr; padding: 40px 24px 36px; }
     .trailmap { order: -1; }
     .trailmap svg { width: min(70%, 300px); }
+    /* On a phone each row stacks: the Arc name and its trail, then the Park name and what it does */
+    .moves { display: block; }
+    .moves .key { display: none; }
+    .moves li { grid-template-columns: 1fr; row-gap: 4px; padding: 18px 0; }
+    .moves li p { grid-column: auto; }
+    .moves .from { font-size: 14px; margin-bottom: 6px; }
     .box { flex-direction: column; align-items: stretch; border-radius: 22px; }
     .box input { padding: 14px; }
     .box .btn { border-radius: 16px; }
@@ -635,6 +666,7 @@
             <div><strong>You're on the list.</strong><p>See you in the park. <span class="got"></span></p></div>
           </div>
         </div>
+        <p class="arc-link rise" style="--d:.44s">Coming from Arc? <a href="#arc">See what comes with you.</a></p>
       </div>
     </div>
     <div class="map" id="map" aria-hidden="true">
@@ -669,11 +701,11 @@
             </div>
             <p class="aside cap" id="cap">
               <span class="on">Scroll at your own pace. Nobody's in a hurry here.</span>
-              <span><b>01</b>Forty tabs, ten frozen, one of them playing music.</span>
+              <span><b>01</b>Forty tabs, ten frozen, one of them playing music you can't find.</span>
               <span><b>02</b>Out they come. Every page gets a spot in the sun.</span>
               <span><b>03</b>Type an address and it drops in. No tab required.</span>
               <span><b>04</b>Pull one page close. The rest politely looks away.</span>
-              <span><b>05</b>It opens next door, with a trail back home.</span>
+              <span><b>05</b>⌘-click and it opens next door, with a trail back home.</span>
               <span><b>06</b>Everything's right where you left it. Even you.</span>
             </p>
           </div>
@@ -712,6 +744,29 @@
     </div>
   </section>
 
+  <!-- For people moving over from Arc: what carries over, row by row. List only what Park really has. -->
+  <section id="arc">
+    <div class="wrap">
+      <div class="head reveal">
+        <div>
+          <p class="eyebrow">Coming from Arc?</p>
+          <h2 class="display">The good parts come with you.</h2>
+        </div>
+        <p class="aside">Arc raised the bar for what a browser could be. Park keeps what worked, then gives every page room to spread out.</p>
+      </div>
+      <ul class="moves reveal">
+        <li class="key" aria-hidden="true"><span>In Arc</span><span>In Park</span></li>
+        <li><span class="from"><span class="vh">In Arc: </span>Spaces and Profiles</span><b><span class="vh">In Park: </span>Spaces</b><p>Each with its own logins, colours and icon. <kbd>⌘1</kbd> to <kbd>⌘9</kbd> to switch.</p></li>
+        <li><span class="from"><span class="vh">In Arc: </span>Command Bar</span><b><span class="vh">In Park: </span>⌘K for everything</b><p>Jump to any page in any Space, or run a command.</p></li>
+        <li><span class="from"><span class="vh">In Arc: </span>Little Arc</span><b><span class="vh">In Park: </span>Peek</b><p>Links from Mail or Slack open small, then become a card in the Space you pick.</p></li>
+        <li><span class="from"><span class="vh">In Arc: </span>Archived tabs</span><b><span class="vh">In Park: </span>Stacks</b><p>Pages you haven't touched in a while fold into stacks you can flip through, and nothing gets thrown away.</p></li>
+        <li><span class="from"><span class="vh">In Arc: </span>Picture in Picture</span><b><span class="vh">In Park: </span>The mini player</b><p>Long videos keep playing in a corner.</p></li>
+        <li><span class="from"><span class="vh">In Arc: </span>Arc Max</span><b><span class="vh">In Park: </span>AI on your terms</b><p>Bring your own model, and it asks before anything leaves.</p></li>
+        <li><span class="from"><span class="vh">In Arc: </span>The sidebar</span><b><span class="vh">In Park: </span><span class="hl">The canvas</span></b><p>Every page is a card you can see. <kbd>⌘</kbd>-click a link and it opens as a new card beside its page, joined by a trail.</p></li>
+      </ul>
+    </div>
+  </section>
+
   <!-- The per-feature progress rows. Hidden for now; the overall standing shows on the trail in the waitlist. -->
   <section id="status" hidden>
     <div class="wrap">
@@ -733,7 +788,7 @@
           <p class="eyebrow">The grounds</p>
           <h2 class="display">What's in the park.</h2>
         </div>
-        <p class="aside">Eight trails through everything built so far. Pick one.</p>
+        <p class="aside">Everything built so far, from the basics you'd expect to the things only Park does. Pick a trail.</p>
       </div>
       <div class="board reveal">
         <div class="board-head">
@@ -744,9 +799,9 @@
         <div class="trailhead">
           <div class="planks" role="tablist" aria-label="Trails" aria-orientation="vertical">
             <button class="plank" type="button" role="tab" id="plank-canvas" aria-controls="trail-canvas" aria-selected="true"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="4.5" width="21" height="19" rx="4"/><rect x="7.5" y="8.5" width="5" height="6" rx="1.2"/><rect x="15.5" y="10.5" width="5" height="6" rx="1.2"/><rect x="9.5" y="16.5" width="4" height="4" rx="1"/></svg><span>The canvas</span><b class="count">7</b></button>
+            <button class="plank" type="button" role="tab" id="plank-spaces" aria-controls="trail-spaces" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="8.5" width="15" height="15" rx="3.5"/><path d="M9.5 4.5h11a3 3 0 0 1 3 3v11"/></svg><span>Spaces &amp; Peek</span><b class="count">6</b></button>
             <button class="plank" type="button" role="tab" id="plank-up-close" aria-controls="trail-up-close" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M17 5h6v6M11 23H5v-6M23 5l-7 7M5 23l7-7"/></svg><span>Up close</span><b class="count">5</b></button>
             <button class="plank" type="button" role="tab" id="plank-island" aria-controls="trail-island" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="10" width="21" height="8" rx="4"/><path d="M9 14h.01M14 14h.01M19 14h.01" stroke-width="2.6"/></svg><span>The island</span><b class="count">4</b></button>
-            <button class="plank" type="button" role="tab" id="plank-spaces" aria-controls="trail-spaces" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="8.5" width="15" height="15" rx="3.5"/><path d="M9.5 4.5h11a3 3 0 0 1 3 3v11"/></svg><span>Spaces &amp; Peek</span><b class="count">6</b></button>
             <button class="plank" type="button" role="tab" id="plank-everyday" aria-controls="trail-everyday" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="5.5" width="21" height="17" rx="4"/><rect x="13.5" y="13" width="7.5" height="6" rx="1.5"/></svg><span>Everyday</span><b class="count">7</b></button>
             <button class="plank" type="button" role="tab" id="plank-private" aria-controls="trail-private" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 3.5l8.5 3.2v6.6c0 5.2-3.6 9.4-8.5 11.2-4.9-1.8-8.5-6-8.5-11.2V6.7z"/><path d="M10.6 14.2l2.4 2.4 4.4-4.8"/></svg><span>Private by design</span><b class="count">5</b></button>
             <button class="plank" type="button" role="tab" id="plank-tools" aria-controls="trail-tools" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 6c.9 4.7 3.3 7.1 8 8-4.7.9-7.1 3.3-8 8-.9-4.7-3.3-7.1-8-8 4.7-.9 7.1-3.3 8-8z"/></svg><span>Power tools</span><b class="count">6</b></button>
@@ -757,12 +812,23 @@
               <p class="blurb">Pages you can see all at once, arrange, and come back to.</p>
               <ul class="ways">
                 <li><h3>Every page is a card</h3><p>Pan and pinch across everything you have open. Each card is the page as you left it, sharp at any zoom.</p></li>
-                <li><h3>Links grow beside their page</h3><p>Open a link and the page you were on stays put. The new one lands next to it, joined by a trail.</p></li>
+                <li><h3>Branch off with <kbd>⌘</kbd>-click</h3><p>Browse inside a card like you would in a tab. <kbd>⌘</kbd>-click a link instead, and it opens as a new card beside its page, joined by a trail.</p></li>
                 <li><h3>Threads you can walk</h3><p>Click a trail to cross it, or step down a thread with <kbd>⌘↓</kbd> and back up with <kbd>⌘↑</kbd>. Tidy Thread lines a page's children up beside it.</p></li>
                 <li><h3>Find by what a page says</h3><p>Search titles, addresses and the words on the page itself, indexed as you browse. Return flies you straight there.</p></li>
                 <li><h3>Old pages fold into stacks</h3><p>Cards you haven't touched in a while fold into stacks you can flip through. Nothing gets thrown away.</p></li>
                 <li><h3>Room for a crowd</h3><p>In our tests, a single Mac kept 50,000 cards fluid. Pages only go live when you open them, never just because you zoomed in.</p></li>
                 <li><h3>Right where you left it</h3><p>Relaunch and you're back where you were, with the same page open. <kbd>⌘⇧T</kbd> brings closed cards back, even after a relaunch.</p></li>
+              </ul>
+            </div>
+            <div class="route" role="tabpanel" id="trail-spaces" aria-labelledby="plank-spaces" tabindex="0">
+              <p class="blurb">Separate canvases for separate parts of life, and links from other apps that wait their turn.</p>
+              <ul class="ways">
+                <li><h3>Separate canvases, separate logins</h3><p>Each new Space gets its own website data, so you can be signed in to the same site as different people in Work and Personal.</p></li>
+                <li><h3>Make each Space yours</h3><p>Give it a name, an icon or emoji, and its own colours. Switch with <kbd>⌘1</kbd> to <kbd>⌘9</kbd>, and move cards between Spaces.</p></li>
+                <li><h3>A Private Space that forgets</h3><p><kbd>⌘0</kbd> opens a Space that's never saved or synced, with no AI. Clear it and it's gone.</p></li>
+                <li><h3>Independent windows</h3><p>A new window is a whole second canvas, fully separate from the first.</p></li>
+                <li><h3>Peek before it's a card</h3><p>A link from Mail, Slack or anywhere else opens in a small window over what you're doing. <kbd>Esc</kbd> closes it and keeps nothing.</p></li>
+                <li><h3>Send it to the right Space</h3><p>One button turns a peek into a card, in whichever Space you pick. Sign in while peeking and you stay signed in.</p></li>
               </ul>
             </div>
             <div class="route" role="tabpanel" id="trail-up-close" aria-labelledby="plank-up-close" tabindex="0">
@@ -782,17 +848,6 @@
                 <li><h3>Put it anywhere</h3><p>Drag it to the top or bottom, left, centre or right, and it snaps into place. With springy motion on, it bends like jelly as you drag.</p></li>
                 <li><h3>No more pop-ups</h3><p>Dialogs, downloads, camera and microphone requests and confirmations open in the island's glass, not system windows. <kbd>Esc</kbd> closes them.</p></li>
                 <li><h3><kbd>⌘K</kbd> for everything</h3><p>Jump to any card in any Space, or run a command.</p></li>
-              </ul>
-            </div>
-            <div class="route" role="tabpanel" id="trail-spaces" aria-labelledby="plank-spaces" tabindex="0">
-              <p class="blurb">Separate canvases for separate parts of life, and links from other apps that wait their turn.</p>
-              <ul class="ways">
-                <li><h3>Separate canvases, separate logins</h3><p>Each new Space gets its own website data, so you can be signed in to the same site as different people in Work and Personal.</p></li>
-                <li><h3>Make each Space yours</h3><p>Give it a name, an icon or emoji, and its own colours. Switch with <kbd>⌘1</kbd> to <kbd>⌘9</kbd>, and move cards between Spaces.</p></li>
-                <li><h3>A Private Space that forgets</h3><p><kbd>⌘0</kbd> opens a Space that's never saved or synced, with no AI. Clear it and it's gone.</p></li>
-                <li><h3>Independent windows</h3><p>A new window is a whole second canvas, fully separate from the first.</p></li>
-                <li><h3>Peek before it's a card</h3><p>A link from Mail, Slack or anywhere else opens in a small window over what you're doing. <kbd>Esc</kbd> closes it and keeps nothing.</p></li>
-                <li><h3>Send it to the right Space</h3><p>One button turns a peek into a card, in whichever Space you pick. Sign in while peeking and you stay signed in.</p></li>
               </ul>
             </div>
             <div class="route" role="tabpanel" id="trail-everyday" aria-labelledby="plank-everyday" tabindex="0">
@@ -917,6 +972,7 @@
     </div>
     <nav>
       <a href="#look">Have a look</a>
+      <a href="#arc">Coming from Arc</a>
       <a href="#grounds">What's in the park</a>
       <a href="#join">Waitlist</a>
     </nav>
@@ -941,7 +997,7 @@
   "features": [
     { "name": "The canvas",   "note": "Wide-open space for every page you have open.", "progress": 90 },
     { "name": "Cards",        "note": "Zoom way out and every page still looks like itself.", "progress": 85 },
-    { "name": "Trails",       "note": "Every page leaves a trail back to where you came from.", "progress": 75 },
+    { "name": "Trails",       "note": "⌘-click a link and it opens beside its page, with a trail back.", "progress": 75 },
     { "name": "The island",   "note": "A tiny toolbar that steps aside while you read.", "progress": 80 },
     { "name": "Sync",         "note": "Encrypted on your Mac before it leaves. The server only sees gibberish.", "progress": 65 },
     { "name": "Beta build",   "note": "Signed, sealed, delivered. Working on all three.", "progress": 15 }

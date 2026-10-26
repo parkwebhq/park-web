@@ -5,7 +5,7 @@ endless canvas.
 
 | Path | What |
 | --- | --- |
-| `index.html` | The page: the hero canvas, the scroll-driven "stroll" scene, the trailhead sign and the waitlist. Dev status lives in the `status-data` block near the bottom; its average walks the trail sticker in the waitlist. |
+| `index.html` | The page: the hero canvas, the scroll-driven "stroll" scene, the "Coming from Arc?" rows, the trailhead sign and the waitlist. Dev status lives in the `status-data` block near the bottom; its average walks the trail sticker in the waitlist. |
 | `og.png` | The link preview card. |
 | `assets/park-badge.svg` | The favicon: the "After hours" badge. |
 | `waitlist/` | The Google Apps Script that stores sign-ups in a Sheet, and how to set it up. |

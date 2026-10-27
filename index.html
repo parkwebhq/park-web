@@ -1622,6 +1622,23 @@
   // ---------- Sign-up ----------
   (function signup() {
     const valid = s => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s);
+    // Where a visit came from: the tag on a link like parkweb.co/?ref=reddit (or a
+    // utm_source), kept for 30 days so a later visit still counts. It goes ahead of
+    // the referrer in the Sheet's Source column, so the Apps Script needs no change.
+    const ref = (() => {
+      const q = new URLSearchParams(location.search);
+      const tag = (q.get("ref") || q.get("utm_source") || "").toLowerCase().replace(/[^a-z0-9._-]/g, "").slice(0, 40);
+      if (tag) store.set("park.ref", { tag, at: Date.now() });
+      // Tidy the address bar, so a copied link doesn't pass the tag on.
+      const tags = [...q.keys()].filter(k => k === "ref" || k.startsWith("utm_"));
+      if (tags.length) {
+        tags.forEach(k => q.delete(k));
+        const rest = q.toString();
+        history.replaceState(null, "", location.pathname + (rest ? `?${rest}` : "") + location.hash);
+      }
+      const kept = store.get("park.ref");
+      return kept && typeof kept.tag === "string" && Date.now() - kept.at < 30 * 864e5 ? kept.tag : "";
+    })();
     // A sticker for the wait. The holo is the rare one.
     const DRAW = ["fresh", "fresh", "bloom", "bloom", "sunset", "sunset", "sky", "sky", "park", "park", "night", "trail", "holo"];
     function joined() {
@@ -1655,7 +1672,7 @@
             // preflight a JSON post would need.
             const r = await fetch(WAITLIST_ENDPOINT, {
               method: "POST",
-              body: new URLSearchParams({ email: value, source: document.referrer || "direct" })
+              body: new URLSearchParams({ email: value, source: (ref ? `ref=${ref} | ` : "") + (document.referrer || "direct") })
             });
             const out = await r.json();
             if (!out.ok) throw new Error(out.error || r.status);

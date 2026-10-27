@@ -14,5 +14,10 @@ Sign-ups go to a Google Sheet. About 10 minutes, once.
 The first sign-up makes a "Waitlist" tab with Joined, Email and Source.
 Repeat emails are ignored. For a CSV: **File › Download › Comma-separated values**.
 
+Source says where the visit came from. A link with a tag, like
+`parkweb.co/?ref=reddit` (or a `utm_source`), gives `ref=reddit | ` followed by
+the referrer; an untagged visit gives just the referrer, or `direct`. The page
+keeps a tag for 30 days, so someone who comes back later still counts.
+
 If you change `Code.gs` later, use **Deploy › Manage deployments › Edit ›
 New version**, so the URL stays the same.

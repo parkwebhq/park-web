@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Park · The beta</title>
-<meta name="description" content="Park's first beta lands in a few weeks, before Arc shuts down. Mac only, free while it's in beta. Tell us you want in.">
+<meta name="description" content="Park's first beta lands in a few weeks, before Arc shuts down. Mac only, free while it's in beta. Invites go out by email to the waitlist.">
 <meta name="theme-color" content="#f3f1e8">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://parkweb.co/beta">
@@ -22,13 +22,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,500..800,100,0&family=Inter:opsz,wght@14..32,400..700&display=swap" rel="stylesheet">
 <style>
-  /* The beta opt-in. Same Daylight tokens as index.html, trimmed to what this page uses. */
+  /* The beta opt-in: a night over the park, and the sun comes up when you're in. It's invite
+     only: the address comes from the waitlist email's link, never a field. Same Daylight
+     tokens as index.html, trimmed to what this page uses. The day it ends on is the home
+     page's lime panel. */
   :root {
     --paper: #f3f1e8;
     --card: #fffefa;
     --ink: #10261d;
     --ink-2: #4b5e54;
-    --line-2: rgba(16, 38, 29, 0.2);
     --forest: #134634;
     --lime: #dcf94c;
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -51,144 +53,481 @@
   :focus-visible { outline: 2px solid var(--forest); outline-offset: 3px; border-radius: 6px; }
   h1 { text-wrap: balance; }
   p { text-wrap: pretty; }
-  .wrap { width: 100%; max-width: 760px; margin: 0 auto; padding: 0 var(--gutter); }
+  .wrap { width: 100%; max-width: 1240px; margin: 0 auto; padding: 0 var(--gutter); }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-  .top .wrap { display: flex; align-items: center; justify-content: space-between; height: 72px; max-width: 1240px; }
-  .brand { display: inline-flex; align-items: center; gap: 6px; font-family: var(--serif); font-weight: 700; font-size: 27px; letter-spacing: -0.035em; line-height: 1; }
-  .badge { width: 34px; height: 34px; rotate: -7deg; transition: rotate 0.6s var(--spring), scale 0.6s var(--spring); }
-  .brand:hover .badge { rotate: -15deg; scale: 1.08; }
-  .back { font-size: 15px; font-weight: 500; color: var(--ink-2); }
-  .back:hover { color: var(--ink); }
+  main { flex: 1; padding: clamp(20px, 4vh, 48px) 0 clamp(40px, 6vw, 72px); }
 
-  main { flex: 1; padding: clamp(56px, 12vh, 140px) 0 80px; }
-  .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: var(--ink-2); letter-spacing: 0.01em; }
-  .eyebrow::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 1.5px var(--forest); flex: none; }
-  h1 { margin-top: 22px; font-family: var(--serif); font-weight: 700; font-size: clamp(46px, 7vw, 80px); letter-spacing: -0.032em; line-height: 0.98; }
-  .hl { position: relative; z-index: 0; white-space: nowrap; }
-  .hl::before {
-    content: ""; position: absolute; z-index: -1; left: -0.05em; right: -0.04em; bottom: 0.1em; height: 0.34em;
-    border-radius: 0.12em; background: var(--lime); transform: rotate(-1.4deg); transform-origin: 0 50%;
-    animation: swipe 0.9s var(--ease) 0.5s backwards;
+  /* ---------- The scene ---------- */
+  .scene {
+    /* The sun's path, in % of the scene: from behind the hills (s), bending through c, up to the slot (e) */
+    --sx: 30; --sy: 62; --cx: 31; --cy: 27; --ex: 50; --ey: 25;
+    --sun: 150px; --land: 52%;
+    /* Before the script paints them */
+    --h-back: #1f1a4d; --h-mid: #15153a; --h-front: #0c0d26; --h-cloud: #2b2766;
+    --dawn: 0; --stars: 1; --glow: 0.35; --part: 0; --ghost: 0.4; --wipe: 0px; --near: 0;
+    position: relative; overflow: hidden; isolation: isolate; max-width: 960px; height: clamp(560px, 82vh, 680px); margin: 0 auto;
+    border-radius: clamp(26px, 3vw, 40px); background: #0b1236;
+    box-shadow: 0 40px 80px -50px rgba(27, 20, 80, 0.8);
+    transition: box-shadow 1.2s var(--ease);
+    -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
   }
-  @keyframes swipe { from { transform: rotate(-1.4deg) scaleX(0); } }
-  .lede { margin-top: 24px; max-width: 30em; font-size: clamp(18px, 1.5vw, 20.5px); line-height: 1.5; color: var(--ink-2); letter-spacing: -0.008em; }
+  .scene.day { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 40px 80px -50px rgba(78, 98, 10, 0.6); }
+  .layer { position: absolute; inset: 0; pointer-events: none; }
+  .night { z-index: 0; background: radial-gradient(60% 42% at 30% 72%, rgba(242, 99, 122, 0.3), transparent 70%), linear-gradient(180deg, #0b1236 0%, #1c1d5e 52%, #45287c 100%); }
+  /* Dawn, in the colours Arc says goodbye in */
+  .dawn { z-index: 1; opacity: var(--dawn); background: radial-gradient(55% 45% at 40% 64%, rgba(255, 200, 120, 0.55), transparent 70%), linear-gradient(180deg, #3d4fd8 0%, #8a5cc6 40%, #f0789a 72%, #ffb36b 100%); }
+  /* Day: the lime panel, wiped in from the sun */
+  .daylight { z-index: 2; background: var(--grain), linear-gradient(180deg, #e6fb59 0%, #d4ef2f 100%); clip-path: circle(var(--wipe) at var(--sun-x, 50%) var(--sun-y, 25%)); }
+  .stars { z-index: 3; opacity: var(--stars); }
+  .stars i { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #fff; opacity: var(--o); animation: twinkle 4s ease-in-out infinite; }
+  .stars i.big { width: 3px; height: 3px; box-shadow: 0 0 6px #fff; }
+  @keyframes twinkle { 50% { opacity: 0.12; } }
+  .glow {
+    position: absolute; left: 0; top: 0; z-index: 4; width: calc(var(--sun) * 3.2); aspect-ratio: 1; margin: calc(var(--sun) * -1.6) 0 0 calc(var(--sun) * -1.6);
+    border-radius: 50%; pointer-events: none; opacity: var(--glow);
+    background: radial-gradient(closest-side, rgba(240, 255, 150, 0.8), rgba(240, 255, 150, 0.25) 45%, transparent);
+  }
+  .rays {
+    position: absolute; left: calc(var(--ex) * 1%); top: calc(var(--ey) * 1%); z-index: 5; width: calc(var(--sun) * 4.6); aspect-ratio: 1;
+    margin: calc(var(--sun) * -2.3) 0 0 calc(var(--sun) * -2.3); border-radius: 50%; pointer-events: none; opacity: 0;
+    background: repeating-conic-gradient(rgba(255, 255, 255, 0.55) 0deg 6deg, rgba(255, 255, 255, 0) 6deg 20deg);
+    -webkit-mask: radial-gradient(closest-side, #000 25%, transparent); mask: radial-gradient(closest-side, #000 25%, transparent);
+    transition: opacity 1.4s var(--ease) 0.35s; animation: spin 60s linear infinite;
+  }
+  .day .rays { opacity: 1; }
+  @keyframes spin { to { rotate: 1turn; } }
+  .trail { z-index: 6; }
+  .trail i { position: absolute; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: #fff; opacity: 0.6; transition: opacity 0.3s; animation: lead 2.4s ease-in-out infinite; animation-delay: calc(var(--i) * 0.11s); }
+  .trail i.gone { opacity: 0; }
+  @keyframes lead { 0%, 30%, 100% { transform: scale(1); } 15% { transform: scale(1.7); } }
+  /* Where the sun goes: the badge's outline, dotted, behind two clouds that part as it comes up */
+  .ghost {
+    position: absolute; left: calc(var(--ex) * 1%); top: calc(var(--ey) * 1%); z-index: 7; width: var(--sun); overflow: visible;
+    margin: calc(var(--sun) * -0.4233) 0 0 calc(var(--sun) * -0.5); opacity: var(--ghost); transform-origin: 50% 42.33%; pointer-events: none;
+  }
+  .ghost path { fill: rgba(255, 255, 255, 0.07); stroke: #fff; stroke-width: 2.2; stroke-dasharray: 1 8; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+  .ready .ghost { animation: beckon 0.9s ease-in-out infinite; }
+  @keyframes beckon { 50% { scale: 1.06; } }
+  .cloud { position: absolute; left: calc(var(--ex) * 1%); top: calc(var(--ey) * 1%); z-index: 8; width: calc(var(--sun) * 1.7); color: var(--h-cloud); opacity: 0.94; pointer-events: none; }
+  .cloud path { fill: currentColor; }
+  .cloud.l { margin: calc(var(--sun) * -0.55) 0 0 calc(var(--sun) * -1.55); translate: calc(var(--part) * var(--sun) * -1.1) 0; }
+  .cloud.r { margin: calc(var(--sun) * -0.2) 0 0 calc(var(--sun) * -0.25); translate: calc(var(--part) * var(--sun) * 1.2) 0; }
+  .birds { z-index: 9; }
+  .bird { position: absolute; left: -6%; top: 13%; width: 28px; fill: none; stroke: var(--forest); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+  .bird.b { top: 19%; width: 22px; }
+  .day .bird { animation: fly 7s linear 0.9s forwards, flap 0.3s ease-in-out infinite alternate; }
+  .day .bird.b { animation-duration: 8s, 0.26s; animation-delay: 1.4s, 0s; }
+  @keyframes fly { 0% { left: -6%; opacity: 1; translate: 0 18px; } 100% { left: 104%; opacity: 1; translate: 0 -24px; } }
+  @keyframes flap { to { scale: 1 0.5; } }
 
-  .signup { margin-top: 36px; max-width: 540px; }
-  .box {
-    display: flex; align-items: center; gap: 6px; padding: 6px; border-radius: 999px; background: var(--card);
-    box-shadow: 0 0 0 1px var(--line-2), 0 1px 2px rgba(16, 38, 29, 0.05), 0 14px 30px -20px rgba(16, 38, 29, 0.5);
+  /* The sun is the badge, anchored at the middle of its bowl. The button brings it up; it can be dragged too. */
+  .sun {
+    position: absolute; left: 0; top: 0; z-index: 10; width: var(--sun); aspect-ratio: 1; margin: calc(var(--sun) * -0.4233) 0 0 calc(var(--sun) * -0.5);
+    cursor: grab; touch-action: none; transform-origin: 50% 42.33%; will-change: transform;
   }
-  .box input { flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--ink); font: 500 17px var(--sans); letter-spacing: -0.01em; padding: 12px 8px 12px 18px; }
-  .box input::placeholder { color: #87938c; }
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 22px;
-    border-radius: 999px; border: 0; cursor: pointer; font: 600 16px/1 var(--sans); letter-spacing: -0.01em; white-space: nowrap;
-    background: var(--forest); color: var(--lime);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 1px 2px rgba(16, 38, 29, 0.25), 0 10px 20px -12px rgba(16, 38, 29, 0.6);
-    transition: transform 0.35s var(--ease), background 0.2s;
+  .sun img { display: block; width: 100%; height: auto; pointer-events: none; -webkit-user-drag: none; transition: scale 0.35s var(--spring), translate 0.35s var(--spring), filter 0.4s; }
+  .sun:hover img { translate: 0 -6px; }
+  .lift .sun { cursor: grabbing; }
+  .lift .sun img { scale: 1.07; translate: 0 0; }
+  .asleep .sun { cursor: default; }
+  .asleep .sun img { filter: saturate(0.5) brightness(0.8); }
+  .set .sun img { animation: set 0.5s var(--ease); }
+  @keyframes set { 0% { scale: 1.12; } 45% { scale: 0.93; } 75% { scale: 1.03; } }
+  .day .sun { cursor: default; }
+  .day .sun img { animation: hop 1s var(--spring) 0.35s; }
+  @keyframes hop { 0%, 100% { translate: 0 0; rotate: 0deg; } 35% { translate: 0 -26px; rotate: -8deg; } 65% { translate: 0 0; rotate: 4deg; } 80% { translate: 0 -6px; } }
+
+  .hills { position: absolute; left: 0; bottom: 0; z-index: 11; display: block; width: 100%; height: calc(100% - var(--land)); pointer-events: none; }
+  .hills .back { fill: var(--h-back); }
+  .hills .mid { fill: var(--h-mid); }
+  .hills .front { fill: var(--h-front); }
+
+  .copy { position: absolute; left: 0; right: 0; bottom: 0; z-index: 12; display: grid; justify-items: center; padding: 0 24px clamp(24px, 4.5%, 40px); text-align: center; color: var(--paper); pointer-events: none; }
+  .copy .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; letter-spacing: 0.01em; color: rgba(243, 241, 232, 0.7); }
+  .copy .eyebrow::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 1.5px rgba(243, 241, 232, 0.55); flex: none; }
+  .copy h1 { margin-top: 10px; font-family: var(--serif); font-weight: 700; font-size: clamp(34px, 4.8vw, 50px); letter-spacing: -0.03em; line-height: 1.02; transition: color 1s; }
+  .day .copy h1 { color: var(--lime); }
+  .copy .sub { margin-top: 10px; font-size: 16px; font-weight: 500; color: rgba(243, 241, 232, 0.78); }
+  .copy .sub:empty { display: none; }
+  /* The button glows like the sun as the pointer nears it */
+  .go {
+    display: inline-flex; align-items: center; justify-content: center; margin-top: 18px; height: 50px; padding: 0 28px; border: 0; border-radius: 999px; cursor: pointer; pointer-events: auto;
+    font: 600 16px/1 var(--sans); letter-spacing: -0.01em; color: var(--forest); background: var(--lime);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 0 calc(var(--near) * 7px) rgba(220, 249, 76, calc(var(--near) * 0.16)), 0 8px calc(16px + var(--near) * 34px) -6px rgba(220, 249, 76, calc(0.2 + var(--near) * 0.5));
+    transition: transform 0.35s var(--ease), background 0.2s, opacity 0.3s;
   }
-  .btn:hover { background: #185a43; transform: translateY(-1px); }
-  .btn:active { transform: translateY(0) scale(0.98); }
-  .btn:disabled { opacity: 0.7; cursor: default; transform: none; }
-  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-  .msg { margin-top: 12px; font-size: 15px; font-weight: 500; }
-  .msg:empty { display: none; }
-  .msg.err { color: #b4321a; }
-  .fine { margin-top: 14px; font-size: 14px; color: var(--ink-2); }
-  .thanks { display: none; }
-  .sent form { display: none; }
-  .sent .thanks { display: block; animation: rise 0.8s var(--ease); }
-  .thanks strong { display: block; font-family: var(--serif); font-size: clamp(28px, 3vw, 36px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
-  .thanks p { margin-top: 8px; color: var(--ink-2); font-size: 17px; }
+  .go:hover { background: #e6fb59; transform: translateY(-1px); }
+  .go:active { transform: translateY(0) scale(0.98); }
+  .go:disabled { cursor: default; opacity: 0.8; transform: none; }
+  .go:focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; border-radius: 999px; }
+  .go[hidden] { display: none; }
+  .copy.swap > * { animation: rise 0.8s var(--ease) backwards; }
+  .copy.swap > :nth-child(2) { animation-delay: 0.08s; }
+  .copy.swap > :nth-child(3) { animation-delay: 0.16s; }
   @keyframes rise { from { opacity: 0; translate: 0 18px; } }
 
-  footer { padding: 28px 0 36px; font-size: 14px; color: var(--ink-2); }
+  .msg { margin-top: 10px; font-size: 15px; font-weight: 500; }
+  .msg:empty { display: none; }
+  .msg.err { color: #ffb4a3; }
 
-  @media (max-width: 560px) {
-    .box { flex-direction: column; align-items: stretch; border-radius: 22px; }
-    .box input { padding: 14px; }
-    .btn { border-radius: 16px; }
+  .below { max-width: 960px; margin: 22px auto 0; display: grid; justify-items: center; gap: 10px; text-align: center; }
+  .below .lede { max-width: 38em; font-size: 16px; line-height: 1.55; color: var(--ink-2); }
+  .below .share { font-size: 15px; color: var(--ink-2); }
+  .below [hidden] { display: none; }
+  .below a { font-weight: 600; color: var(--forest); text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; text-decoration-color: rgba(19, 70, 52, 0.35); }
+  .uninvited .either { display: none; }
+
+  footer { padding: 8px 0 40px; font-size: 14px; color: var(--ink-2); }
+  footer .wrap { display: grid; justify-items: center; gap: 12px; text-align: center; }
+  .brand { display: inline-flex; align-items: center; gap: 6px; font-family: var(--serif); font-weight: 700; font-size: 27px; letter-spacing: -0.035em; line-height: 1; color: var(--ink); }
+  .badge { width: 34px; height: 34px; rotate: -7deg; transition: rotate 0.6s var(--spring), scale 0.6s var(--spring); }
+  .brand:hover .badge { rotate: -15deg; scale: 1.08; }
+
+  @media (max-width: 600px) {
+    .scene { --sx: 27; --sy: 56; --cx: 28; --cy: 26; --ex: 50; --ey: 22; --sun: 112px; --land: 47%; height: clamp(560px, calc(100svh - 64px), 720px); }
+    .trail i { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; }
   }
   @media (prefers-reduced-motion: reduce) {
-    *, *::before { animation: none !important; transition: none !important; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    .bird { display: none; }
   }
 </style>
 </head>
 <body>
-<header class="top">
-  <div class="wrap">
-    <a class="brand" href="/" aria-label="Park"><img class="badge" src="/assets/park-badge.svg" alt="">park</a>
-    <a class="back" href="/">parkweb.co</a>
-  </div>
-</header>
-
 <main>
   <div class="wrap">
-    <p class="eyebrow">The Park beta</p>
-    <h1>Want in on the <span class="hl">beta?</span></h1>
-    <p class="lede">The first build lands in a few weeks, before Arc shuts down. It's Mac only, free while it's in beta, and a little rough around the edges, so we'll want to hear what breaks.</p>
-    <div class="signup">
-      <form class="join" novalidate>
-        <div class="box">
-          <label class="hp" aria-hidden="true">Leave this empty <input name="company" tabindex="-1" autocomplete="off"></label>
-          <input name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" aria-label="Email address" required>
-          <button class="btn" type="submit">Count me in</button>
-        </div>
-        <p class="msg" role="status" aria-live="polite"></p>
-        <p class="fine">You stay on the waitlist either way. This only adds you to the beta.</p>
-      </form>
-      <div class="thanks" role="status">
-        <strong>You're in for the beta.</strong>
-        <p>We'll email you when the first build is ready.</p>
+    <section class="scene" aria-labelledby="title">
+      <div class="layer night"></div>
+      <div class="layer dawn"></div>
+      <div class="layer daylight"></div>
+      <div class="layer stars" aria-hidden="true"></div>
+      <div class="glow" aria-hidden="true"></div>
+      <div class="rays" aria-hidden="true"></div>
+      <div class="layer trail" aria-hidden="true"></div>
+      <svg class="ghost" viewBox="-44 -40 1112 1112" aria-hidden="true"><path d="M70.6 757.38 L70.6 430.71 A440.95 440.95 0 1 1 642.29 851.84 A91.43 91.43 0 0 0 589.82 894.12 A277.62 277.62 0 0 1 70.6 757.38 Z"/></svg>
+      <svg class="cloud l" viewBox="0 0 200 90" aria-hidden="true"><path d="M24 84H176C192 84 198 70 190 60C184 52 172 50 164 54C164 36 148 24 130 28C122 12 100 4 82 12C66 18 60 30 62 40C52 32 34 34 28 46C14 46 4 58 8 70C10 78 16 84 24 84Z"/></svg>
+      <svg class="cloud r" viewBox="0 0 200 90" aria-hidden="true"><path d="M24 84H176C192 84 198 70 190 60C184 52 172 50 164 54C164 36 148 24 130 28C122 12 100 4 82 12C66 18 60 30 62 40C52 32 34 34 28 46C14 46 4 58 8 70C10 78 16 84 24 84Z"/></svg>
+      <div class="layer birds" aria-hidden="true">
+        <svg class="bird a" viewBox="0 0 28 12"><path d="M1 9Q7.5 1 14 8Q20.5 1 27 9"/></svg>
+        <svg class="bird b" viewBox="0 0 28 12"><path d="M1 9Q7.5 1 14 8Q20.5 1 27 9"/></svg>
       </div>
+      <div class="sun" aria-hidden="true"><img src="/assets/park-badge.svg" alt="" draggable="false"></div>
+      <svg class="hills" viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true">
+        <path class="back" d="M0 80C100 50 220 40 330 60C450 82 560 98 690 76C800 58 910 50 1000 66V300H0Z"/>
+        <path class="mid" d="M0 122C130 94 270 98 410 118C540 136 650 128 770 108C870 92 945 98 1000 112V300H0Z"/>
+        <path class="front" d="M0 152C160 128 340 116 500 120C660 124 840 130 1000 150V300H0Z"/>
+      </svg>
+      <div class="copy">
+        <p class="eyebrow">The Park beta</p>
+        <h1 id="title">Want in on the beta?</h1>
+        <p class="sub"></p>
+        <button class="go" type="button">Count me in</button>
+        <a class="go wait" href="/#join" hidden>Join the waitlist</a>
+        <p class="msg" role="alert"></p>
+      </div>
+      <p class="vh" role="status" aria-live="polite"></p>
+    </section>
+    <div class="below">
+      <p class="lede">The first build lands in a few weeks, before Arc shuts down. It's Mac only, free while it's in beta, and a little rough around the edges, so we'll want to hear what breaks.<span class="either"> You stay on the waitlist either way.</span></p>
+      <p class="share" hidden>Know someone else leaving Arc? Send them <a href="/">parkweb.co</a>.</p>
+      <noscript><p class="share">Bringing up the sun needs JavaScript turned on.</p></noscript>
     </div>
   </div>
 </main>
 
 <footer>
-  <div class="wrap">© 2026 Circa75 Media, LLC</div>
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Park"><img class="badge" src="/assets/park-badge.svg" alt="">park</a>
+    <p>© 2026 Circa75 Media, LLC</p>
+  </div>
 </footer>
 
 <script>
   (() => {
-    const signup = document.querySelector(".signup"), form = signup.querySelector("form");
-    const email = form.elements.email, go = form.querySelector("button"), msg = form.querySelector(".msg");
+    const scene = document.querySelector(".scene"), sun = scene.querySelector(".sun"), glow = scene.querySelector(".glow");
+    const stars = scene.querySelector(".stars"), trail = scene.querySelector(".trail"), copy = scene.querySelector(".copy");
+    const eyebrow = copy.querySelector(".eyebrow"), title = copy.querySelector("h1"), sub = copy.querySelector(".sub");
+    const go = copy.querySelector("button.go"), wait = copy.querySelector(".wait"), msg = copy.querySelector(".msg");
+    const live = scene.querySelector("[role=status]"), share = document.querySelector(".share");
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const touch = matchMedia("(pointer: coarse)").matches;
     const valid = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) && v.length <= 254;
+    const clamp = (v, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, v));
+    const smooth = (a, b, v) => { const x = clamp((v - a) / (b - a)); return x * x * (3 - 2 * x); };
+    const easeOut = k => 1 - (1 - k) ** 3;
+    const easeIn = k => k * k * k;
+    const easeInOut = k => k < 0.5 ? 4 * k ** 3 : 1 - (-2 * k + 2) ** 3 / 2;
+    const easeBack = k => 1 + 2.4 * (k - 1) ** 3 + 1.4 * (k - 1) ** 2;   // overshoots, then settles
 
-    // The waitlist email links here as /beta#their@address. What follows the # never
-    // reaches a server, and it comes off the address bar once it's in the field.
+    // Browser storage can be off or full, and then the page just forgets
+    const store = (where, key, value) => {
+      try { return value === undefined ? window[where].getItem(key) : window[where].setItem(key, value); } catch { return null; }
+    };
+
+    // It's invite only: the waitlist email links here as /beta#their@address. What follows
+    // the # never reaches a server, and it comes off the address bar once it's read. It never
+    // shows on screen either, so a recording of the sunrise doesn't give it away. This tab
+    // keeps it, so a refresh still works, and this browser remembers once you're in.
+    let known = "", linked = false;
     if (location.hash.length > 1) {
       try {
         const given = decodeURIComponent(location.hash.slice(1)).trim();
-        if (valid(given)) email.value = given;
+        if (valid(given)) { known = given; linked = true; store("sessionStorage", "park.beta.email", given); }
       } catch {}
       history.replaceState(null, "", location.pathname + location.search);
     }
+    const kept = store("sessionStorage", "park.beta.email");
+    if (!known && kept && valid(kept)) known = kept;
+    const joined = !linked && store("localStorage", "park.beta") === "in";
+    const say = (text, bad) => { msg.textContent = text; msg.classList.toggle("err", !!bad); };
 
-    form.addEventListener("submit", async e => {
+    // Stars, scattered the same way every time
+    let seed = 11;
+    const rand = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+    for (let i = 0; i < 48; i++) {
+      const s = document.createElement("i");
+      s.style.cssText = `left:${rand() * 100}%;top:${rand() * 58}%;animation-delay:${-rand() * 4}s;--o:${0.35 + rand() * 0.6}`;
+      if (rand() > 0.85) s.className = "big";
+      stars.append(s);
+    }
+
+    // The path: a curve from behind the hills up to the slot, read from the scene's CSS
+    let W, H, S, C, E;
+    const dots = [];
+    const at = u => ({
+      x: (1 - u) ** 2 * S.x + 2 * (1 - u) * u * C.x + u * u * E.x,
+      y: (1 - u) ** 2 * S.y + 2 * (1 - u) * u * C.y + u * u * E.y
+    });
+    function measure() {
+      W = scene.clientWidth; H = scene.clientHeight;
+      const css = getComputedStyle(scene), pt = (x, y) => ({ x: parseFloat(css.getPropertyValue(x)) / 100 * W, y: parseFloat(css.getPropertyValue(y)) / 100 * H });
+      S = pt("--sx", "--sy"); C = pt("--cx", "--cy"); E = pt("--ex", "--ey");
+      // Dots evenly spaced along the curve, from above the sun to below the slot
+      const n = 200, len = [0];
+      for (let i = 1, a = at(0); i <= n; i++) { const b = at(i / n); len.push(len[i - 1] + Math.hypot(b.x - a.x, b.y - a.y)); a = b; }
+      const uAt = s => { const i = Math.max(1, len.findIndex(l => l >= s)); return (i - 1 + (s - len[i - 1]) / (len[i] - len[i - 1])) / n; };
+      const count = Math.round(len[n] * 0.62 / 22);
+      trail.textContent = ""; dots.length = 0;
+      for (let i = 0; i < count; i++) {
+        const u = uAt(len[n] * (0.19 + 0.62 * i / (count - 1))), q = at(u), d = document.createElement("i");
+        d.style.cssText = `left:${q.x}px;top:${q.y}px;--i:${i}`;
+        d.u = u; trail.append(d); dots.push(d);
+      }
+    }
+    function nearest(x, y) {
+      const d = u => { const q = at(u); return (q.x - x) ** 2 + (q.y - y) ** 2; };
+      let best = 0;
+      for (let i = 1; i <= 60; i++) if (d(i / 60) < d(best)) best = i / 60;
+      let lo = Math.max(0, best - 1 / 60), hi = Math.min(1, best + 1 / 60);
+      for (let k = 0; k < 14; k++) { const a = lo + (hi - lo) / 3, b = hi - (hi - lo) / 3; if (d(a) < d(b)) hi = b; else lo = a; }
+      return (lo + hi) / 2;
+    }
+
+    // Colours for night, dawn and day: the back hill, the middle one, the front one and the clouds
+    const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+    const PAL = {
+      back: ["#1f1a4d", "#8a4f8e", "#c3df3a"],
+      mid: ["#15153a", "#4f2f70", "#1c6a56"],
+      front: ["#0c0d26", "#231a45", "#134634"],
+      cloud: ["#2b2766", "#f7b8c6", "#ffffff"]
+    };
+    for (const k in PAL) PAL[k] = PAL[k].map(hex);
+    const mix = (a, b, k) => a.map((v, i) => v + (b[i] - v) * k);
+
+    // t is how far up the sun is, 0 to 1, and goal is where it's headed. day runs 0 to 1 once you're in.
+    const PEEK = 0.13;   // how far up it comes with the pointer on the button
+    let t = 0, goal = 0, near = 0, tilt = 0, day = 0, wipe = 0;
+    let dragging = false, busy = false, done = false, tried = false, gen = 0;
+    function paint() {
+      const p = clamp(t), q = at(t), dawn = smooth(0.04, 0.8, p), s = scene.style;
+      sun.style.transform = `translate(${q.x}px, ${q.y}px) rotate(${tilt}deg)`;
+      glow.style.transform = `translate(${q.x}px, ${q.y}px) scale(${0.7 + 0.6 * p})`;
+      s.setProperty("--dawn", dawn);
+      s.setProperty("--stars", 1 - smooth(0, 0.55, p));
+      s.setProperty("--glow", (0.35 + 0.65 * p) * (1 - day));
+      s.setProperty("--part", Math.max(smooth(0.35, 0.85, p), day));
+      s.setProperty("--ghost", done ? 0 : 0.4 + 0.6 * smooth(0.45, 0.9, p));
+      s.setProperty("--wipe", wipe + "px");
+      s.setProperty("--near", busy || done ? 1 : clamp(t / PEEK));
+      s.setProperty("--sun-x", q.x + "px");
+      s.setProperty("--sun-y", q.y + "px");
+      for (const k in PAL) s.setProperty("--h-" + k, `rgb(${mix(mix(PAL[k][0], PAL[k][1], dawn), PAL[k][2], day).map(Math.round).join(" ")})`);
+      for (const d of dots) d.classList.toggle("gone", d.u < p + 0.03);
+    }
+
+    // One animation loop for the drag and for anything tweening
+    const anims = new Set();
+    let raf = 0;
+    const kick = () => { raf ||= requestAnimationFrame(frame); };
+    function animate(ms, ease, step) {
+      return new Promise(end => { anims.add({ from: performance.now(), ms: reduced ? 1 : ms, ease, step, end }); kick(); });
+    }
+    function halt() { gen++; for (const a of anims) a.end(); anims.clear(); }
+    function frame(now) {
+      raf = 0;
+      const x0 = at(t).x;
+      for (const a of [...anims]) {
+        const k = clamp((now - a.from) / a.ms);
+        a.step(a.ease(k));
+        if (k === 1) { anims.delete(a); a.end(); }
+      }
+      if (dragging) t += (goal - t) * 0.35;
+      else if (!busy && !done && !anims.size) t += (goal - t) * 0.1;
+      // The sun leans the way it's pulled, like a sticker on the end of a finger
+      tilt += (clamp((at(t).x - x0) * 1.3, -14, 14) - tilt) * 0.2;
+      paint();
+      if (anims.size || dragging || Math.abs(tilt) > 0.1 || (!busy && !done && Math.abs(goal - t) > 0.0005)) kick();
+    }
+
+    // Dragging
+    let grab = null;
+    sun.addEventListener("pointerdown", e => {
+      if (done || busy || !known || e.button > 0) return;
+      tried = true;
       e.preventDefault();
-      msg.textContent = ""; msg.className = "msg";
-      const value = email.value.trim();
-      if (form.elements.company.value) return;          // a bot filled the hidden field
-      if (!valid(value)) { msg.textContent = "That email looks a little off."; msg.classList.add("err"); email.focus(); return; }
-      go.disabled = true; go.textContent = "Saving…";
+      sun.setPointerCapture(e.pointerId);
+      halt();
+      const r = scene.getBoundingClientRect(), q = at(t);
+      grab = { dx: e.clientX - r.left - q.x, dy: e.clientY - r.top - q.y, x: e.clientX, y: e.clientY, at: performance.now(), moved: 0 };
+      dragging = true; goal = clamp(t);
+      scene.classList.add("lift");
+      kick();
+    });
+    sun.addEventListener("pointermove", e => {
+      if (!dragging) return;
+      const r = scene.getBoundingClientRect();
+      grab.moved = Math.max(grab.moved, Math.hypot(e.clientX - grab.x, e.clientY - grab.y));
+      goal = nearest(e.clientX - r.left - grab.dx, e.clientY - r.top - grab.dy);
+      scene.classList.toggle("ready", goal > 0.84);
+      kick();
+    });
+    function release(e) {
+      if (!dragging) return;
+      dragging = false;
+      scene.classList.remove("lift", "ready");
+      if (e.type === "pointerup" && grab.moved < 6 && performance.now() - grab.at < 500) rise();   // a tap
+      else if (goal > 0.84) commit();
+      else settle();
+    }
+    sun.addEventListener("pointerup", release);
+    sun.addEventListener("pointercancel", release);
+
+    // Let go too soon and the sun sinks back behind the hills
+    function settle() {
+      const from = t;
+      goal = PEEK * near;
+      animate(750, easeBack, k => { t = from + (goal - from) * k; });
+    }
+    // The button, Return or a tap on the sun: it comes up the rest of the way on its own
+    async function rise() {
+      if (done || busy || !known) return;
+      tried = true;
+      halt(); busy = true; go.disabled = true;
+      const g = gen, from = clamp(t);
+      await animate(200 + 1400 * (1 - from), easeInOut, k => { t = from + (1 - from) * k; });
+      if (g === gen) commit();
+    }
+    go.addEventListener("click", rise);
+    document.addEventListener("keydown", e => {
+      if (e.key !== "Enter" || e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.target.closest("input, button, a, textarea, select")) return;
+      e.preventDefault(); rise();
+    });
+
+    // In the slot: ask Resend while it settles, then either morning or back down
+    async function commit() {
+      busy = true;
+      const asked = join(), from = t;
+      await animate(220, easeOut, k => { t = from + (1 - from) * k; });
+      scene.classList.add("set");
+      const [ok] = await Promise.all([asked, new Promise(r => setTimeout(r, reduced ? 0 : 450))]);
+      scene.classList.remove("set");
+      if (ok) return morning();
+      const top = t;
+      await animate(1000, easeIn, k => { t = top + (PEEK * near - top) * k; });
+      busy = false; go.disabled = false; goal = PEEK * near;
+    }
+    async function join() {
+      say("");
       try {
         const r = await fetch("/api/beta", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: value })
+          body: JSON.stringify({ email: known })
         });
-        const out = await r.json().catch(() => ({}));
-        if (out.ok) { signup.classList.add("sent"); return; }
-        msg.textContent = out.error === "not_configured"
-          ? "The beta list isn't open just yet. Check back soon."
-          : "That didn't go through. Mind trying again?";
+        // A plain static server on this Mac has no /api, so there the sunrise plays anyway
+        if ([404, 501].includes(r.status) && /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+          console.warn("No /api/beta on this server: nothing was sent.");
+          return true;
+        }
+        const answer = await r.json().catch(() => ({}));
+        if (answer.ok) return true;
+        say(answer.error === "not_configured" ? "The beta list isn't open just yet. Check back soon."
+          : answer.error === "invalid" ? "That link looks a little off. Try the one in your email again."
+          : "That didn't go through. Mind trying again?", true);
       } catch {
-        msg.textContent = "That didn't go through. Mind trying again?";
+        say("That didn't go through. Mind trying again?", true);
       }
-      msg.classList.add("err");
-      go.disabled = false; go.textContent = "Count me in";
+      return false;
+    }
+    // Day spreads out from the sun. Back again after joining, it's already morning.
+    function morning(already) {
+      done = true; busy = false;
+      scene.classList.add("day");
+      if (already) { t = 1; day = 1; wipe = 99999; }
+      else {
+        const far = Math.hypot(Math.max(E.x, W - E.x), Math.max(E.y, H - E.y)) + 40;
+        animate(1400, easeOut, k => { day = k; wipe = far * k; }).then(() => { wipe = 99999; paint(); });
+        store("localStorage", "park.beta", "in");
+        live.textContent = "You're in for the beta. We'll email you when the first build is ready.";
+        copy.classList.remove("swap"); void copy.offsetWidth; copy.classList.add("swap");
+      }
+      eyebrow.textContent = "Good morning";
+      title.textContent = "You're in for the beta.";
+      sub.textContent = "We'll email you when the first build is ready.";
+      go.hidden = true; share.hidden = false;
+    }
+    // No address means no invite: say so, and point to the waitlist instead
+    function uninvited() {
+      document.body.classList.add("uninvited");
+      scene.classList.add("asleep");
+      title.textContent = "The beta is invite only.";
+      sub.textContent = "Invites go out by email to people on the waitlist.";
+      go.hidden = true; wait.hidden = false;
+    }
+
+    // The sun peeks up as a mouse nears the button, or when the button has focus
+    document.addEventListener("pointermove", e => {
+      if (e.pointerType !== "mouse" || !known) return;
+      const r = go.getBoundingClientRect();
+      const dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right), dy = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
+      near = clamp(1 - Math.hypot(dx, dy) / 300) ** 2;
+      if (!dragging && !busy && !done) { goal = PEEK * near; kick(); }
     });
+    document.addEventListener("pointerout", e => {
+      if (e.relatedTarget || dragging || busy || done) return;   // only when it leaves the window
+      near = 0; goal = 0; kick();
+    });
+    go.addEventListener("focus", () => { if (!busy && !done) { goal = PEEK; kick(); } });
+    go.addEventListener("blur", () => { if (!busy && !done) { goal = PEEK * near; kick(); } });
+
+    // A phone has no pointer to come near the button, so until someone tries,
+    // the sun peeks over the hill now and then on its own
+    if (touch && known) setTimeout(function peek() {
+      if (tried || done) return;
+      if (!busy && !dragging && t < 0.001 && !reduced && !document.hidden) {
+        const g = ++gen;
+        animate(450, easeOut, k => { t = 0.08 * k; }).then(() => { if (g === gen) animate(650, easeBack, k => { t = 0.08 * (1 - k); }); });
+      }
+      setTimeout(peek, 3800);
+    }, 1400);
+
+    addEventListener("resize", () => { measure(); if (done) wipe = 99999; paint(); });
+    measure();
+    if (joined) morning(true);
+    else if (!known) uninvited();
+    paint();
   })();
 </script>
 </body>

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Park · The beta</title>
+<meta name="description" content="Park's first beta lands in a few weeks, before Arc shuts down. Mac only, free while it's in beta. Tell us you want in.">
+<meta name="theme-color" content="#f3f1e8">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://parkweb.co/beta">
+<meta property="og:title" content="Park · Want in on the beta?">
+<meta property="og:description" content="The first build lands in a few weeks, before Arc shuts down. Mac only, free while it's in beta.">
+<meta property="og:image" content="https://parkweb.co/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@parkwebhq">
+<link rel="icon" href="/assets/park-badge.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.png" type="image/png" sizes="96x96">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,500..800,100,0&family=Inter:opsz,wght@14..32,400..700&display=swap" rel="stylesheet">
+<style>
+  /* The beta opt-in. Same Daylight tokens as index.html, trimmed to what this page uses. */
+  :root {
+    --paper: #f3f1e8;
+    --card: #fffefa;
+    --ink: #10261d;
+    --ink-2: #4b5e54;
+    --line-2: rgba(16, 38, 29, 0.2);
+    --forest: #134634;
+    --lime: #dcf94c;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --spring: cubic-bezier(0.34, 1.45, 0.64, 1);
+    --gutter: clamp(20px, 5vw, 64px);
+    --serif: "Fraunces", ui-serif, Georgia, serif;
+    --sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .06 0 0 0 0 .15 0 0 0 0 .11 0 0 0 .5 -.2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--paper); color-scheme: light; }
+  body {
+    min-height: 100vh; display: flex; flex-direction: column;
+    background: var(--paper) var(--grain); color: var(--ink);
+    font: 400 17px/1.55 var(--sans); font-optical-sizing: auto; -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; }
+  ::selection { background: var(--lime); color: var(--ink); }
+  :focus-visible { outline: 2px solid var(--forest); outline-offset: 3px; border-radius: 6px; }
+  h1 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+  .wrap { width: 100%; max-width: 760px; margin: 0 auto; padding: 0 var(--gutter); }
+
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; height: 72px; max-width: 1240px; }
+  .brand { display: inline-flex; align-items: center; gap: 6px; font-family: var(--serif); font-weight: 700; font-size: 27px; letter-spacing: -0.035em; line-height: 1; }
+  .badge { width: 34px; height: 34px; rotate: -7deg; transition: rotate 0.6s var(--spring), scale 0.6s var(--spring); }
+  .brand:hover .badge { rotate: -15deg; scale: 1.08; }
+  .back { font-size: 15px; font-weight: 500; color: var(--ink-2); }
+  .back:hover { color: var(--ink); }
+
+  main { flex: 1; padding: clamp(56px, 12vh, 140px) 0 80px; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: var(--ink-2); letter-spacing: 0.01em; }
+  .eyebrow::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 1.5px var(--forest); flex: none; }
+  h1 { margin-top: 22px; font-family: var(--serif); font-weight: 700; font-size: clamp(46px, 7vw, 80px); letter-spacing: -0.032em; line-height: 0.98; }
+  .hl { position: relative; z-index: 0; white-space: nowrap; }
+  .hl::before {
+    content: ""; position: absolute; z-index: -1; left: -0.05em; right: -0.04em; bottom: 0.1em; height: 0.34em;
+    border-radius: 0.12em; background: var(--lime); transform: rotate(-1.4deg); transform-origin: 0 50%;
+    animation: swipe 0.9s var(--ease) 0.5s backwards;
+  }
+  @keyframes swipe { from { transform: rotate(-1.4deg) scaleX(0); } }
+  .lede { margin-top: 24px; max-width: 30em; font-size: clamp(18px, 1.5vw, 20.5px); line-height: 1.5; color: var(--ink-2); letter-spacing: -0.008em; }
+
+  .signup { margin-top: 36px; max-width: 540px; }
+  .box {
+    display: flex; align-items: center; gap: 6px; padding: 6px; border-radius: 999px; background: var(--card);
+    box-shadow: 0 0 0 1px var(--line-2), 0 1px 2px rgba(16, 38, 29, 0.05), 0 14px 30px -20px rgba(16, 38, 29, 0.5);
+  }
+  .box input { flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--ink); font: 500 17px var(--sans); letter-spacing: -0.01em; padding: 12px 8px 12px 18px; }
+  .box input::placeholder { color: #87938c; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 22px;
+    border-radius: 999px; border: 0; cursor: pointer; font: 600 16px/1 var(--sans); letter-spacing: -0.01em; white-space: nowrap;
+    background: var(--forest); color: var(--lime);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 1px 2px rgba(16, 38, 29, 0.25), 0 10px 20px -12px rgba(16, 38, 29, 0.6);
+    transition: transform 0.35s var(--ease), background 0.2s;
+  }
+  .btn:hover { background: #185a43; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0) scale(0.98); }
+  .btn:disabled { opacity: 0.7; cursor: default; transform: none; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .msg { margin-top: 12px; font-size: 15px; font-weight: 500; }
+  .msg:empty { display: none; }
+  .msg.err { color: #b4321a; }
+  .fine { margin-top: 14px; font-size: 14px; color: var(--ink-2); }
+  .thanks { display: none; }
+  .sent form { display: none; }
+  .sent .thanks { display: block; animation: rise 0.8s var(--ease); }
+  .thanks strong { display: block; font-family: var(--serif); font-size: clamp(28px, 3vw, 36px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
+  .thanks p { margin-top: 8px; color: var(--ink-2); font-size: 17px; }
+  @keyframes rise { from { opacity: 0; translate: 0 18px; } }
+
+  footer { padding: 28px 0 36px; font-size: 14px; color: var(--ink-2); }
+
+  @media (max-width: 560px) {
+    .box { flex-direction: column; align-items: stretch; border-radius: 22px; }
+    .box input { padding: 14px; }
+    .btn { border-radius: 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Park"><img class="badge" src="/assets/park-badge.svg" alt="">park</a>
+    <a class="back" href="/">parkweb.co</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <p class="eyebrow">The Park beta</p>
+    <h1>Want in on the <span class="hl">beta?</span></h1>
+    <p class="lede">The first build lands in a few weeks, before Arc shuts down. It's Mac only, free while it's in beta, and a little rough around the edges, so we'll want to hear what breaks.</p>
+    <div class="signup">
+      <form class="join" novalidate>
+        <div class="box">
+          <label class="hp" aria-hidden="true">Leave this empty <input name="company" tabindex="-1" autocomplete="off"></label>
+          <input name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" aria-label="Email address" required>
+          <button class="btn" type="submit">Count me in</button>
+        </div>
+        <p class="msg" role="status" aria-live="polite"></p>
+        <p class="fine">You stay on the waitlist either way. This only adds you to the beta.</p>
+      </form>
+      <div class="thanks" role="status">
+        <strong>You're in for the beta.</strong>
+        <p>We'll email you when the first build is ready.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">© 2026 Circa75 Media, LLC</div>
+</footer>
+
+<script>
+  (() => {
+    const signup = document.querySelector(".signup"), form = signup.querySelector("form");
+    const email = form.elements.email, go = form.querySelector("button"), msg = form.querySelector(".msg");
+    const valid = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) && v.length <= 254;
+
+    // The waitlist email links here as /beta#their@address. What follows the # never
+    // reaches a server, and it comes off the address bar once it's in the field.
+    if (location.hash.length > 1) {
+      try {
+        const given = decodeURIComponent(location.hash.slice(1)).trim();
+        if (valid(given)) email.value = given;
+      } catch {}
+      history.replaceState(null, "", location.pathname + location.search);
+    }
+
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      msg.textContent = ""; msg.className = "msg";
+      const value = email.value.trim();
+      if (form.elements.company.value) return;          // a bot filled the hidden field
+      if (!valid(value)) { msg.textContent = "That email looks a little off."; msg.classList.add("err"); email.focus(); return; }
+      go.disabled = true; go.textContent = "Saving…";
+      try {
+        const r = await fetch("/api/beta", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: value })
+        });
+        const out = await r.json().catch(() => ({}));
+        if (out.ok) { signup.classList.add("sent"); return; }
+        msg.textContent = out.error === "not_configured"
+          ? "The beta list isn't open just yet. Check back soon."
+          : "That didn't go through. Mind trying again?";
+      } catch {
+        msg.textContent = "That didn't go through. Mind trying again?";
+      }
+      msg.classList.add("err");
+      go.disabled = false; go.textContent = "Count me in";
+    });
+  })();
+</script>
+</body>
+</html>

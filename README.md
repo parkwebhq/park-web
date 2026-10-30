@@ -12,8 +12,9 @@ endless canvas.
 | `waitlist/` | The Google Apps Script that stores sign-ups in a Sheet, and how to set it up. |
 | `beta/` | The beta opt-in page: a night over the park, with the Park badge as a sun behind the hills. It peeks up as the pointer nears "Count me in", and a click brings it up the rest of the way and turns the card to day. It's invite only: waitlist emails link to it as `/beta#<their address>`, and the address never shows on screen or reaches a server. The tab keeps it so a refresh still works, and the browser remembers once you're in. Without an address it says the beta is invite only and points to the waitlist; there's never a field. |
 | `api/beta.js` | The Vercel Function behind that page: it adds the address to Resend's "Park beta" segment, and makes a contact first if there isn't one. Needs `RESEND_API_KEY`, a Full access key, in the Vercel project; until then the page says the list isn't open yet. |
+| `api/waitlist.js` | The Vercel Function that puts each home page sign-up in Resend's "Park waitlist" segment, so the waitlist emails reach it without an import. The page sends every sign-up here and to the Sheet, and counts it saved if either one takes it. Same `RESEND_API_KEY`. |
 
-Static files and one Vercel Function, no build step. Vercel serves `main` at
+Static files and two Vercel Functions, no build step. Vercel serves `main` at
 [parkweb.co](https://parkweb.co); `CNAME` is left over from GitHub Pages.
 
 ## Look and feel

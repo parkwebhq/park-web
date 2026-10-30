@@ -2,6 +2,10 @@
 
 Sign-ups go to a Google Sheet. About 10 minutes, once.
 
+They go to Resend's "Park waitlist" segment too, through `api/waitlist.js`, so the
+waitlist emails reach them without an import. The Sheet stays the record of where
+each sign-up came from.
+
 1. Make a new Google Sheet. Name it "Park waitlist".
 2. **Extensions › Apps Script.** Delete what's there, paste in `Code.gs`, save.
 3. **Deploy › New deployment.** Click the gear, pick **Web app**.

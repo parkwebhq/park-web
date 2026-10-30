@@ -1666,26 +1666,36 @@
           return;
         }
         go.disabled = true; go.textContent = "Saving…"; box.classList.remove("off");
-        try {
-          if (WAITLIST_ENDPOINT) {
-            // Sent as a plain form post: Apps Script can't answer the
-            // preflight a JSON post would need.
-            const r = await fetch(WAITLIST_ENDPOINT, {
-              method: "POST",
-              body: new URLSearchParams({ email: value, source: (ref ? `ref=${ref} | ` : "") + (document.referrer || "direct") })
-            });
-            const out = await r.json();
-            if (!out.ok) throw new Error(out.error || r.status);
-          } else {
+        // Each sign-up goes two places: the Sheet, which keeps where it came from, and
+        // Resend, which sends the waitlist emails (api/waitlist.js). Either one is enough.
+        const sheet = async () => {
+          if (!WAITLIST_ENDPOINT) {
             console.warn("WAITLIST_ENDPOINT is empty: nothing was sent.");
-            await new Promise(r => setTimeout(r, 900));
+            return new Promise(r => setTimeout(r, 900));
           }
-          joined();
-        } catch {
-          msg.textContent = "That didn't go through. Mind trying again?";
-          msg.classList.add("err");
-          go.disabled = false; go.textContent = "Save my spot";
-        }
+          // Sent as a plain form post: Apps Script can't answer the
+          // preflight a JSON post would need.
+          const r = await fetch(WAITLIST_ENDPOINT, {
+            method: "POST",
+            body: new URLSearchParams({ email: value, source: (ref ? `ref=${ref} | ` : "") + (document.referrer || "direct") })
+          });
+          const out = await r.json();
+          if (!out.ok) throw new Error(out.error || r.status);
+        };
+        const resend = async () => {
+          const r = await fetch("/api/waitlist", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: value })
+          });
+          const out = await r.json();
+          if (!out.ok) throw new Error(out.error || r.status);
+        };
+        const landed = await Promise.allSettled([sheet(), resend()]);
+        if (landed.some(l => l.status === "fulfilled")) return joined();
+        msg.textContent = "That didn't go through. Mind trying again?";
+        msg.classList.add("err");
+        go.disabled = false; go.textContent = "Save my spot";
       });
     });
   })();

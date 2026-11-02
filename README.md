@@ -9,6 +9,7 @@ endless canvas.
 | `og.png` | The link preview card. |
 | `assets/park-badge.svg` | The favicon: the "After hours" badge. |
 | `email/park-logo.png` | The badge in Park's emails (sign-in and welcome, sent by Supabase), at 3× for 37×44. |
+| `assets/park-email-logo.png`, `assets/park-email-demo.gif` | Images for the waitlist emails sent through Resend: the badge at the top, and a 15-second look at Park on a lime gradient (740×480, shown at 496). |
 | `waitlist/` | The Google Apps Script that stores sign-ups in a Sheet, and how to set it up. |
 | `beta/` | The beta opt-in page: a night over the park, with the Park badge as a sun behind the hills. It peeks up as the pointer nears "Count me in", and a click brings it up the rest of the way and turns the card to day. It's invite only: waitlist emails link to it as `/beta#<their address>`, and the address never shows on screen or reaches a server. The tab keeps it so a refresh still works, and the browser remembers once you're in. Without an address it says the beta is invite only and points to the waitlist; there's never a field. |
 | `api/beta.js` | The Vercel Function behind that page: it adds the address to Resend's "Park beta" segment, and makes a contact first if there isn't one. Needs `RESEND_API_KEY`, a Full access key, in the Vercel project; until then the page says the list isn't open yet. |

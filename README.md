@@ -5,7 +5,8 @@ endless canvas.
 
 | Path | What |
 | --- | --- |
-| `index.html` | The page: the hero canvas, the scroll-driven "stroll" scene, the "Coming from Arc?" rows, the trailhead sign and the waitlist. Dev status lives in the `status-data` block near the bottom; its average walks the trail sticker in the waitlist. |
+| `index.html` | The page: the hero canvas, the small Park, the "Coming from Arc?" rows, the trailhead sign and the waitlist. Dev status lives in the `status-data` block near the bottom; its average walks the trail sticker in the waitlist. |
+| `clips/` | The small Park's real clips of the app: an `.mp4` and a poster `.jpg` for each stop, named by the stop's `data-clip`. They're 1760 wide, H.264 at 30 fps with faststart, and 2–4 MB each. Only the clip at the current stop loads. |
 | `og.png` | The link preview card. |
 | `assets/park-badge.svg` | The favicon: the "After hours" badge. |
 | `email/park-logo.png` | The badge in Park's emails (sign-in and welcome, sent by Supabase), at 3× for 37×44. |
@@ -24,6 +25,6 @@ Static files and two Vercel Functions, no build step. Vercel serves `main` at
 - **Type:** Fraunces (soft) for anything big, Inter for reading.
 - **Badges:** the logo is always one of the sticker-sheet badges, never the bare P. The header wears "After hours"; the sign and footer wear "Fresh cut".
 - **Stickers:** `sticker()` in `index.html` builds every badge the way the sheet does: the mark grown into a die-cut (its inside corner filleted at 0.8 of the growth), a two-layer shadow, an edge, the vinyl and a soft gloss. The trail sticker in the waitlist is `park.svg` as drawn. The hero stickers can be moved, and they stay where you leave them.
-- **Canvases:** where one canvas meets another, the edge is wavy. The stroll plays on its own lime band.
+- **Canvases:** where one canvas meets another, the edge is wavy. The small Park sits on its own lime band.
 
 © 2026 Circa75 Media, LLC

@@ -328,7 +328,7 @@
   .reveal { transition: opacity 1.1s var(--ease), translate 1.1s var(--ease); }
   .js .reveal:not(.in) { opacity: 0; translate: 0 26px; }
 
-  /* ---------- The stroll: its own canvas, edge to edge, with wavy borders ---------- */
+  /* ---------- The small Park: the real app on a canvas of its own, edge to edge, with wavy borders ---------- */
   .look { position: relative; z-index: 1; margin-top: clamp(40px, 6vw, 80px); padding: clamp(56px, 7vw, 92px) 0 clamp(28px, 4vw, 48px); background: var(--lime) var(--grain); }
   .look::before, .look::after {
     content: ""; position: absolute; left: 0; right: 0; height: 14px; background: inherit; pointer-events: none;
@@ -336,12 +336,20 @@
   }
   .look::before { bottom: calc(100% - 1px); }
   .look::after { top: calc(100% - 1px); transform: scaleY(-1); }
-  /* How long the scene lasts: more height, slower scene */
-  .stroll { height: 1060vh; }
-  .hold { position: sticky; top: 72px; height: calc(100svh - 72px); display: flex; flex-direction: column; padding: 26px 0 20px; isolation: isolate; }
-  /* Soft light across the canvas, held still while the scene plays. It fades out toward the top and bottom,
-     so it meets the flat lime around it, and the wavy borders, without a seam. */
-  .hold::before {
+  .look .head { margin-bottom: 18px; }
+  .look .eyebrow { color: var(--on-lime); }
+  .look .eyebrow::before { background: var(--card); }
+  .title { position: relative; height: 1em; }
+  .title > span { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transition: opacity 0.4s; }
+  .title > span.on { opacity: 1; }
+  .cap { position: relative; width: 27em; max-width: 100%; height: 3em; font-size: 15px; line-height: 1.5; color: var(--on-lime); text-align: right; }
+  .cap span { position: absolute; left: 0; right: 0; bottom: 0; opacity: 0; transition: opacity 0.4s; text-wrap: balance; }
+  .cap span.on { opacity: 1; }
+
+  /* Left to itself, or on a phone, it's a row of clips to swipe through. The script turns it into a canvas where there's a pointer and room. */
+  .meadow { position: relative; isolation: isolate; }
+  /* Soft light across the canvas, fading toward the top and bottom so it meets the flat lime without a seam */
+  .meadow::before {
     content: ""; position: absolute; inset: -72px 0 0; z-index: -1; pointer-events: none;
     background:
       radial-gradient(46% 52% at 12% 30%, rgba(255, 255, 255, 0.44), transparent 72%),
@@ -350,90 +358,70 @@
     -webkit-mask-image: linear-gradient(to bottom, transparent, #000 26%, #000 70%, transparent);
     mask-image: linear-gradient(to bottom, transparent, #000 26%, #000 70%, transparent);
   }
-  .hold > .wrap { width: 100%; flex: none; }
-  .look .head { margin-bottom: 18px; }
-  .look .eyebrow { color: var(--on-lime); }
-  .look .eyebrow::before { background: var(--card); }
-  .title { position: relative; height: 1em; }
-  .title > span { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; transition: opacity 0.4s; }
-  .title > span.on { opacity: 1; }
-  .cap { position: relative; width: 27em; max-width: 100%; height: 1.5em; font-size: 15px; line-height: 1.5; color: var(--on-lime); text-align: right; white-space: nowrap; }
-  .cap span { position: absolute; left: 0; right: 0; bottom: 0; opacity: 0; transition: opacity 0.4s; white-space: normal; text-wrap: balance; }
-  .cap span.on { opacity: 1; }
-  .cap b { font: var(--mono); letter-spacing: 0.08em; color: var(--forest-2); margin-right: 10px; vertical-align: 1px; }
-  /* The scene gets the full width of the band; it is drawn in a fixed 1000 × 625 space and scaled to fit */
-  .walk { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; }
-  .scene { position: absolute; left: 0; top: 0; width: 1000px; height: 625px; transform-origin: 0 0; }
-  .canvas { position: absolute; inset: 0; transform-origin: 50% 50%; }
-  .scene .trails .trail { stroke-width: 2.2; stroke-dasharray: 0 7; }
-  .scene .trails .draw { stroke-width: 10; transition: none; }
-  .scene .card { opacity: 1; translate: 0 0; scale: 1; transition: none; background: transparent; border: 0 solid rgba(16, 38, 29, 0.14); box-shadow: 0 10px 18px -12px rgb(54 74 6 / calc(var(--g, 1) * 0.6)); }
-  .scene .card.new { background: var(--card); border-width: 1px; }
-  .scene .pg { transition: none; }
-  .fly { transform-origin: 0 0; }
-  .fly .fav { position: absolute; left: 0; right: 0; top: 50%; translate: 0 -50%; aspect-ratio: 1; border-radius: inherit; background: var(--c); }
-  .scene .pin { left: 790px; top: 406px; }
-  .back { position: absolute; inset: 0; }
-  .story { display: flex; flex-direction: column; gap: 3.6cqw; flex: none; }
+  .world { display: flex; gap: 32px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 8px var(--gutter) 24px; }
+  .world::-webkit-scrollbar { display: none; }
+  .world > .trails, .tags, .meadow .pin, .dial, .isle, .wander { display: none; }
+  .stop { position: relative; flex: 0 0 min(84vw, 560px); scroll-snap-align: center; }
+  .shot { position: relative; display: block; aspect-ratio: 1760 / 1086; border-radius: 14px; background: var(--forest-3); box-shadow: 0 0 0 1px rgba(16, 38, 29, 0.08), 0 2px 3px rgba(16, 38, 29, 0.08), 0 26px 40px -24px rgba(16, 38, 29, 0.55); }
+  .shot img, .shot video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block; }
+  .shot video { opacity: 0; transition: opacity 0.25s; }
+  .shot.playing video { opacity: 1; }
+  .stop figcaption { margin-top: 16px; color: var(--on-lime); font-size: 15px; line-height: 1.5; }
+  .stop figcaption b { display: block; font-family: var(--serif); font-weight: 700; font-size: 25px; letter-spacing: -0.02em; line-height: 1.15; color: var(--ink); margin-bottom: 4px; }
+  /* The trail runs on from each clip to the next */
+  .stop:not(:last-child)::after { content: ""; position: absolute; left: 100%; width: 32px; top: calc((min(84vw, 560px)) * 0.3); height: 4px; background: radial-gradient(circle, var(--forest) 1.5px, transparent 2px) 0 0 / 8px 4px; }
 
-  /* A crowded browser window */
-  .win {
-    position: absolute; left: 0; top: 36px; width: 1000px; height: 556px; border-radius: 12px; overflow: hidden;
-    background: var(--card); color: var(--ink); transform-origin: 50% 50%;
-    box-shadow: 0 0 0 1px rgba(16, 38, 29, 0.12), 0 34px 70px -34px rgba(54, 74, 6, 0.6);
-  }
-  .win .strip { position: relative; height: 44px; background: #ebe9df; }
-  .win .strip svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .win .strip .rule { fill: none; stroke: var(--line-2); stroke-width: 1; }
-  .win .strip .act { fill: var(--card); stroke: var(--line-2); stroke-width: 1; }
-  .win .lights { position: absolute; left: 14px; top: 17px; display: flex; gap: 7px; }
-  .win .lights i { width: 10px; height: 10px; border-radius: 50%; }
-  .win .toolbar { height: 40px; display: flex; align-items: center; gap: 14px; padding: 0 16px; border-bottom: 1px solid var(--line); }
-  .win .toolbar svg { width: 16px; height: 16px; flex: none; fill: none; stroke: var(--ink-2); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
-  .win .toolbar svg.fwd { stroke: rgba(16, 38, 29, 0.25); }
-  .win .url { flex: 1; height: 28px; border-radius: 14px; background: #efede5; display: flex; align-items: center; gap: 8px; padding: 0 12px; font: var(--mono); letter-spacing: 0.02em; color: var(--ink-2); }
-  .win .url svg { width: 11px; height: 11px; stroke-width: 1.2; }
-  .win .marks { height: 32px; display: flex; align-items: center; gap: 20px; padding: 0 18px; border-bottom: 1px solid var(--line); }
-  .win .marks span { display: inline-flex; align-items: center; gap: 7px; }
-  .win .marks i { width: 10px; height: 10px; border-radius: 2px; background: var(--c); }
-  .win .marks b { width: 44px; height: 2px; border-radius: 1px; background: rgba(16, 38, 29, 0.14); }
-  .win .marks svg { width: 13px; height: 13px; fill: none; stroke: var(--ink-2); stroke-width: 1.2; }
-  .win-page { height: 438px; display: flex; justify-content: center; padding-top: 30px; }
-  .win-col { width: 560px; container-type: size; display: flex; flex-direction: column; gap: 3cqw; }
+  .meadow.free { height: clamp(480px, calc(100svh - 236px), 780px); cursor: grab; touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+  .meadow.free.dragging { cursor: grabbing; }
+  .meadow.free:focus-visible { outline-offset: -6px; border-radius: 14px; }
+  .free .view { position: absolute; inset: 0; overflow: hidden; -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22px, #000 calc(100% - 22px), transparent); mask-image: linear-gradient(to bottom, transparent, #000 22px, #000 calc(100% - 22px), transparent); }
+  /* One root, one transform. Held on the GPU only while it moves, so a canvas at rest is drawn sharp. */
+  .free .world { position: absolute; left: 0; top: 0; display: block; overflow: visible; padding: 0; transform-origin: 0 0; }
+  .free .world.moving { will-change: transform; }
+  .free .world > .trails { display: block; position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: visible; transition: opacity 0.5s var(--ease); }
+  .free .stop { position: absolute; width: 1000px; cursor: pointer; transition: opacity 0.5s var(--ease), filter 0.5s var(--ease), scale 0.5s var(--spring); }
+  .free .stop::after, .free .stop figcaption { display: none; }
+  .free .shot { border-radius: 24px; box-shadow: 0 0 0 2px rgba(16, 38, 29, 0.08), 0 8px 12px rgba(16, 38, 29, 0.08), 0 80px 120px -60px rgba(16, 38, 29, 0.6); }
+  .free .shot.beam::before, .free .shot.beam::after { z-index: 1; }
+  .free:not(.landed):not(.dragging) .stop:hover { scale: 1.025; }
+  /* At a card, the rest of the canvas blurs and looks away, as it does in the app */
+  .free.landed .stop:not(.here) { opacity: 0.4; filter: blur(14px) saturate(0.85); }
+  .free.landed .world > .trails { opacity: 0.3; }
+  .free.landed .stop.here { cursor: default; }
 
-  /* The URL bar, centred over a dimmed canvas */
-  .urlbar {
-    position: absolute; left: 220px; top: 280px; width: 560px; height: 64px; border-radius: 16px;
-    background: var(--card); color: var(--ink); box-shadow: 0 0 0 1px var(--line-2), 0 26px 50px -22px rgba(54, 74, 6, 0.6);
-    display: flex; align-items: center; padding: 0 24px; font-size: 20px; font-weight: 500; letter-spacing: -0.01em; white-space: nowrap; opacity: 0;
-  }
-  .urlbar .caret { width: 2px; height: 24px; margin-left: 2px; background: var(--forest); visibility: hidden; }
-  .urlbar .caret.on { visibility: visible; animation: blink 1s steps(2) infinite; }
-  @keyframes blink { 50% { visibility: hidden; } }
-  .cursor { position: absolute; left: 0; top: 0; width: 24px; height: 24px; opacity: 0; transform-origin: 5px 3px; }
-  .cursor path { fill: #111; stroke: #fff; stroke-width: 1.4; stroke-linejoin: round; }
-  .ring { position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--forest); translate: -50% -50%; opacity: 0; }
+  .free .tags { display: block; position: absolute; inset: 0; pointer-events: none; }
+  .tag { position: absolute; left: 0; top: 0; display: flex; align-items: baseline; gap: 6px; translate: -50% 0; white-space: nowrap; font: 600 13px/1.2 var(--sans); letter-spacing: -0.005em; color: var(--ink); }
+  .tag small { font-weight: 500; font-size: 12px; color: #4a6151; }
+  .free .pin { display: flex; left: 0; top: 0; z-index: 2; opacity: 1; transition: opacity 0.3s; }
+  .free.landed .pin { opacity: 0; }
 
-  /* The finished canvas gets a key */
-  .legend {
-    position: absolute; z-index: 3; left: 50%; bottom: 10px; translate: -50% 0; display: flex; align-items: center; gap: 14px;
-    padding: 8px 12px; border-radius: 10px; background: rgba(255, 254, 250, 0.92); box-shadow: 0 0 0 1px var(--line), 0 8px 18px -12px rgba(54, 74, 6, 0.5);
-    font: 600 11px/1 var(--sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; opacity: 0; pointer-events: none;
-  }
-  .legend span { display: inline-flex; align-items: center; gap: 7px; }
-  .legend .k-card { width: 10px; height: 12px; border-radius: 2px; background: var(--card); box-shadow: 0 0 0 1px var(--line-2); }
-  .legend .k-trail { width: 18px; height: 2.4px; background: radial-gradient(circle, var(--forest) 1.2px, transparent 1.5px) 0 50% / 6px 2.4px repeat-x; }
-  .legend .k-here { width: 9px; height: 9px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 2px #fff, 0 0 0 2.6px var(--line-2); }
-  /* On a phone the stroll is drawn in a taller 600 × 700 space instead (the script adds .tall below 861px):
-     a narrower window, a bigger address bar, and a pin that stays readable at phone size */
-  .scene.tall { width: 600px; height: 700px; }
-  .scene.tall .canvas { transform-origin: 50% 40%; }
-  .scene.tall .win { left: 20px; top: 120px; width: 560px; height: 460px; }
-  .scene.tall .win-page { height: 344px; padding-top: 22px; }
-  .scene.tall .win-col { width: 420px; }
-  .scene.tall .pin { left: 502px; top: 506px; scale: 1.5; transform-origin: 50% calc(100% - 9px); }
-  .scene.tall .urlbar { top: 314px; height: 72px; padding: 0 26px; border-radius: 18px; font-size: 24px; }
-  .scene.tall .urlbar .caret { height: 28px; }
+  /* The zoom dial, as the app draws it */
+  .free .dial { display: block; position: absolute; left: 18px; bottom: 16px; width: 58px; height: 58px; pointer-events: none; color: rgba(16, 38, 29, 0.42); }
+  .dial svg { display: block; width: 100%; height: 100%; }
+  .dial text { font: 600 11px/1 var(--sans); fill: rgba(16, 38, 29, 0.6); text-anchor: middle; }
+
+  /* The island: the walk's controls, in the app's glass */
+  .free .isle { display: flex; position: absolute; left: 50%; bottom: 18px; translate: -50% 0; align-items: center; gap: 2px; padding: 6px; border-radius: 19px; cursor: default; background: rgba(255, 255, 255, 0.66); -webkit-backdrop-filter: blur(22px) saturate(1.5); backdrop-filter: blur(22px) saturate(1.5); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55), 0 0 0 1px rgba(16, 38, 29, 0.07), 0 20px 34px -18px rgba(16, 38, 29, 0.55); }
+  .isle button { display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 13px; background: transparent; cursor: pointer; color: var(--ink); transition: background 0.2s; }
+  .isle button:hover { background: rgba(16, 38, 29, 0.08); }
+  .isle svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .isle .sep { width: 1px; height: 18px; margin: 0 5px; background: rgba(16, 38, 29, 0.14); }
+  .isle .pause { display: none; }
+  .walking .isle .pause { display: block; }
+  .walking .isle .go { display: none; }
+  /* The trail, in small: one stop for each clip, and you are here */
+  .way { display: flex; align-items: center; padding: 0 2px; background: radial-gradient(circle, rgba(16, 38, 29, 0.32) 1px, transparent 1.4px) 0 50% / 6px 4px repeat-x; }
+  .isle .way button { width: 22px; height: 28px; border-radius: 8px; background: none; }
+  .way i { display: block; width: 9px; height: 9px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1.5px var(--forest); transition: background 0.3s, scale 0.4s var(--spring); }
+  .way button:hover i { scale: 1.25; }
+  .way .done i { background: var(--forest); }
+  .way .on i { background: var(--signal); box-shadow: 0 0 0 2px #fff, 0 0 0 3.25px var(--signal); }
+
+  .free .wander { display: block; position: absolute; right: 22px; bottom: 26px; max-width: 16em; font-size: 13px; line-height: 1.4; text-align: right; color: var(--on-lime); pointer-events: none; transition: opacity 0.4s; }
+  .wander span { white-space: nowrap; }
+  .wander kbd { font: 600 0.92em/1 var(--sans); padding: 0.16em 0.36em; border-radius: 5px; background: rgba(16, 38, 29, 0.09); }
+  .free.landed .wander, .free.roamed .wander { opacity: 0; }
+  @media (max-width: 1100px) { .free .wander { display: none; } }
 
   /* ---------- What's in the park: the trailhead sign ---------- */
   .board {
@@ -584,12 +572,10 @@
     .hint { position: relative; right: auto; bottom: auto; justify-content: center; margin: -6px var(--gutter) 0; }
     .head { grid-template-columns: 1fr; }
     .head .aside { text-align: left; }
-    .stroll { height: 900vh; }
-    .hold { padding-top: 20px; }
     .title { font-size: 40px; }
-    .cap { width: 100%; height: 3em; text-align: left; white-space: normal; }
-    .cap span { top: 0; bottom: auto; text-wrap: wrap; }
-    .legend { gap: 10px; padding: 7px 10px; font-size: 10px; }
+    .cap { width: 100%; height: auto; text-align: left; }
+    .cap span { position: static; display: none; text-wrap: wrap; }
+    .cap span.on { display: block; }
     .board-head small { display: none; }
     /* On a phone the planks become one swipeable row above the trail, with the next one peeking in */
     .trailhead { grid-template-columns: 1fr; gap: 22px; }
@@ -679,66 +665,42 @@
     </p>
   </section>
 
-  <!-- Media: drop a clip in as media/park.mp4 (and a poster) and it takes over this frame. -->
+  <!-- The small Park: the real app, in clips, on a canvas of its own. The stops' words below feed the title and caption. -->
   <section id="look" class="look">
-    <div class="stroll" id="stroll">
-      <div class="hold" id="hold">
-        <div class="wrap">
-          <div class="head">
-            <div>
-              <p class="eyebrow">Have a look</p>
-              <h2 class="display title" id="title">
-                <span class="on">Take a stroll.</span>
-                <span>The usual.</span>
-                <span>Room to roam.</span>
-                <span>Go somewhere.</span>
-                <span>Get cozy.</span>
-                <span>Follow a link.</span>
-                <span>Zoom out.</span>
-              </h2>
-            </div>
-            <p class="aside cap" id="cap">
-              <span class="on">Scroll at your own pace. Nobody's in a hurry here.</span>
-              <span><b>01</b>Forty tabs, ten frozen, one of them playing music you can't find.</span>
-              <span><b>02</b>Out they come. Every page gets a spot in the sun.</span>
-              <span><b>03</b>Type an address and it drops in. No tab required.</span>
-              <span><b>04</b>Pull one page close. The rest politely looks away.</span>
-              <span><b>05</b>⌘-click and it opens next door, with a trail back home.</span>
-              <span><b>06</b>Everything's right where you left it. Even you.</span>
-            </p>
-          </div>
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow">Have a look</p>
+          <h2 class="display title" id="title"><span class="on">Take a stroll.</span></h2>
         </div>
-        <div class="walk" id="walk" aria-hidden="true">
-          <div class="scene" id="scene">
-            <div class="canvas" id="canvas">
-              <div class="win" id="win">
-                <div class="strip"><svg id="strip" viewBox="0 0 998 44" preserveAspectRatio="none"></svg><div class="lights"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div></div>
-                <div class="toolbar">
-                  <svg viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></svg>
-                  <svg class="fwd" viewBox="0 0 16 16"><path d="m6 3 5 5-5 5"/></svg>
-                  <svg viewBox="0 0 16 16"><path d="M13 8a5 5 0 1 1-1.5-3.6M13 3v3h-3"/></svg>
-                  <div class="url"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor"><rect x="2" y="5" width="8" height="6" rx="1.5"/><path d="M4 5V3.5a2 2 0 0 1 4 0V5"/></svg>somewhere.com/that-article-you-meant-to-finish</div>
-                </div>
-                <div class="marks">
-                  <span style="--c:#1cb6fc"><i></i><b></b></span>
-                  <span style="--c:#fc9e1e"><i></i><b style="width:30px"></b></span>
-                  <span><svg viewBox="0 0 14 14"><path d="M1.5 4a1 1 0 0 1 1-1h3l1.5 1.5h5a1 1 0 0 1 1 1V11a1 1 0 0 1-1 1h-9.5a1 1 0 0 1-1-1z"/></svg><b style="width:52px"></b></span>
-                  <span style="--c:#fa60c8"><i></i><b style="width:36px"></b></span>
-                  <span><svg viewBox="0 0 14 14"><path d="M1.5 4a1 1 0 0 1 1-1h3l1.5 1.5h5a1 1 0 0 1 1 1V11a1 1 0 0 1-1 1h-9.5a1 1 0 0 1-1-1z"/></svg><b style="width:40px"></b></span>
-                  <span style="--c:#2fd39a"><i></i><b style="width:26px"></b></span>
-                </div>
-                <div class="win-page"><div class="win-col" id="wincol" style="--c:#1cb6fc;--c2:#1f44fb"></div></div>
-              </div>
-              <svg class="trails" id="walkTrails" viewBox="0 0 1000 625"><defs></defs></svg>
-              <div class="pin" id="walkPin"><b>You are here</b><i></i></div>
-            </div>
-            <div class="urlbar" id="urlbar"><span class="typed"></span><i class="caret"></i></div>
-            <i class="ring" id="ring"></i>
-            <svg class="cursor" id="cursor" viewBox="0 0 24 24"><path d="M5 3l14 11h-6.5l3.6 7.2-2.8 1.3L9.8 15 5 19.5z"/></svg>
-          </div>
-          <div class="legend" id="legend"><span><i class="k-card"></i>Page</span><span><i class="k-trail"></i>Trail</span><span><i class="k-here"></i>You are here</span></div>
-        </div>
+        <p class="aside cap" id="cap"><span class="on">That's really Park in there. Sit back and it'll walk you around, or grab the canvas and wander off.</span></p>
       </div>
+    </div>
+    <div class="meadow" id="meadow" tabindex="0" role="group" aria-label="Clips of Park on a canvas. The left and right arrow keys move between them, and Escape zooms out.">
+      <div class="view" id="view">
+        <div class="world" id="world">
+          <svg class="trails" id="meadowTrails" aria-hidden="true"></svg>
+          <figure class="stop" data-clip="roam" data-where="the canvas"><div class="shot"><img src="clips/roam.jpg" alt="Groups of web pages spread across Park's canvas, zoomed out" loading="lazy" decoding="async" draggable="false"></div><figcaption><b>Room to roam.</b> <span>Out they come. Every page gets a spot in the sun.</span></figcaption></figure>
+          <figure class="stop" data-clip="cozy" data-where="up close"><div class="shot"><img src="clips/cozy.jpg" alt="One page pulled close, with the canvas blurred around it" loading="lazy" decoding="async" draggable="false"></div><figcaption><b>Get cozy.</b> <span>Pull one page close. The rest politely looks away.</span></figcaption></figure>
+          <figure class="stop" data-clip="row" data-where="up close"><div class="shot"><img src="clips/row.jpg" alt="A row of cards fanned out over a page that fills the window" loading="lazy" decoding="async" draggable="false"></div><figcaption><b>Flip through.</b> <span>⌃⇥ brings up every card in the Space, right over the page you're on.</span></figcaption></figure>
+          <figure class="stop" data-clip="more" data-where="power tools"><div class="shot"><img src="clips/more.jpg" alt="New cards fanned out around a page, each joined to it by a trail" loading="lazy" decoding="async" draggable="false"></div><figcaption><b>Go exploring.</b> <span>Ask for more like this and they fan out beside the page, each on its own trail.</span></figcaption></figure>
+          <figure class="stop" data-clip="side" data-where="up close"><div class="shot"><img src="clips/side.jpg" alt="Three live pages side by side in one window" loading="lazy" decoding="async" draggable="false"></div><figcaption><b>Bring a few along.</b> <span>Select some cards and press Return. Two split, four make a quad, and they all stay live.</span></figcaption></figure>
+          <figure class="stop" data-clip="pass" data-where="settings"><div class="shot"><img src="clips/pass.jpg" alt="A Park Pass, a membership card with a landscape and a name" loading="lazy" decoding="async" draggable="false"></div><figcaption><b>Get your pass.</b> <span>A membership card for your canvas. It tilts, it shuffles, and it's yours to share.</span></figcaption></figure>
+          <figure class="stop" data-clip="arc" data-where="coming from Arc"><div class="shot"><img src="clips/arc.jpg" alt="Park's Import from Arc screen, with Arc's logo on one side and Park's on the other" loading="lazy" decoding="async" draggable="false"></div><figcaption><b>Moving day.</b> <span>Drag Arc in. Your Spaces, pinned tabs and folders come with you.</span></figcaption></figure>
+        </div>
+        <div class="tags" id="tags" aria-hidden="true"></div>
+        <div class="pin" id="stopPin" aria-hidden="true"><b>You are here</b><i></i></div>
+      </div>
+      <div class="dial" aria-hidden="true"><svg viewBox="0 0 64 64"><g id="dialTicks" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></g><path id="dialHand" d="M32 3.5v8" fill="none" stroke="rgba(16,38,29,.72)" stroke-width="2.6" stroke-linecap="round"/><text id="dialText" x="32" y="36">100%</text></svg></div>
+      <div class="isle" id="isle" role="toolbar" aria-label="The walk">
+        <button type="button" id="prevStop" aria-label="Previous stop"><svg viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></svg></button>
+        <div class="way" id="way"></div>
+        <button type="button" id="nextStop" aria-label="Next stop"><svg viewBox="0 0 16 16"><path d="m6 3 5 5-5 5"/></svg></button>
+        <i class="sep"></i>
+        <button type="button" id="walkStop" aria-label="Walk the trail"><svg class="go" viewBox="0 0 16 16"><path d="M4.5 2.8v10.4L13 8z"/></svg><svg class="pause" viewBox="0 0 16 16"><path d="M5.5 3v10M10.5 3v10"/></svg></button>
+        <button type="button" id="fitAll" aria-label="See the whole canvas"><svg viewBox="0 0 16 16"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10"/></svg></button>
+      </div>
+      <p class="wander">Pinch or <span><kbd>⌘</kbd>-scroll</span> to zoom, then drag to wander.</p>
     </div>
   </section>
 
@@ -1278,252 +1240,355 @@
     });
   })();
 
-  // ---------- The stroll ----------
-  // Where each tab lands on the canvas, in scene pixels. from = the card it came from.
-  const SPOTS = [
-    { x: 380, y: 14, w: 54 }, { x: 446, y: 8, w: 58 }, { x: 514, y: 16, w: 52 }, { x: 578, y: 10, w: 56 },
-    { x: 400, y: 92, w: 56 }, { x: 468, y: 86, w: 60 }, { x: 540, y: 90, w: 52 }, { x: 604, y: 84, w: 58 },
-    { id: "L", x: 150, y: 330, w: 72 },
-    { x: 20, y: 250, w: 54, from: "L" }, { x: 90, y: 190, w: 58, from: "L" }, { x: 190, y: 180, w: 56, from: "L" },
-    { x: 270, y: 230, w: 58, from: "L" }, { x: 24, y: 400, w: 56, from: "L" }, { x: 104, y: 470, w: 54, from: "L" },
-    { id: "R", x: 850, y: 330, w: 66 }, { x: 770, y: 220, w: 58, from: "R" }, { x: 924, y: 240, w: 56, from: "R" }, { x: 916, y: 410, w: 58, from: "R" },
-    { id: "B1", x: 330, y: 520, w: 52 }, { id: "B2", x: 396, y: 514, w: 56, from: "B1" }, { x: 462, y: 522, w: 50, from: "B2" },
-    { id: "F", x: 952, y: 40, w: 46 }, { x: 954, y: 128, w: 44, from: "F" }
-  ];
-  // On a phone the stroll is drawn in a taller 600 × 700 space, so a portrait frame shows all of it:
-  // the same cards in the same order, with the same trails between them, placed for a narrower canvas.
-  const SPOTS_TALL = [
-    { x: 172, y: 24, w: 52 }, { x: 234, y: 18, w: 56 }, { x: 300, y: 26, w: 50 }, { x: 360, y: 20, w: 54 },
-    { x: 186, y: 104, w: 54 }, { x: 250, y: 98, w: 58 }, { x: 318, y: 102, w: 50 }, { x: 378, y: 96, w: 56 },
-    { id: "L", x: 40, y: 300, w: 66 },
-    { x: 10, y: 212, w: 46, from: "L" }, { x: 72, y: 196, w: 50, from: "L" }, { x: 138, y: 214, w: 48, from: "L" },
-    { x: 146, y: 300, w: 50, from: "L" }, { x: 12, y: 410, w: 50, from: "L" }, { x: 86, y: 440, w: 48, from: "L" },
-    { id: "R", x: 480, y: 300, w: 64 }, { x: 412, y: 206, w: 50, from: "R" }, { x: 536, y: 212, w: 48, from: "R" }, { x: 528, y: 410, w: 50, from: "R" },
-    { id: "B1", x: 96, y: 560, w: 50 }, { id: "B2", x: 160, y: 552, w: 54, from: "B1" }, { x: 226, y: 562, w: 48, from: "B2" },
-    { id: "F", x: 520, y: 30, w: 44 }, { x: 522, y: 108, w: 42, from: "F" }
-  ];
-  // The two ways the stroll is drawn: wide is the original 1000 × 625 scene, tall is the phone's.
-  // win = where the window sits; slot, tabW, tabVis = the tab strip; n1, n2 = the typed-in page and the one
-  // its link opens; cozy = where n1 comes up close; enter = where the pointer comes in from;
-  // pad = room kept around the scene; align = where it sits in a taller frame (0 top, 0.5 middle).
-  const WIDE = {
-    w: 1000, h: 625, spots: SPOTS, win: { x: 0, y: 36, w: 1000 }, slot: 74, tabW: 34, tabVis: 11,
-    n1: { x: 470, y: 250, w: 150 }, n2: { x: 680, y: 400, w: 116 }, cozy: { x: 265, y: 18.75, w: 470 },
-    enter: [1010, 650], cursor: 1, ring: 1, bar: 560
-  };
-  const TALL = {
-    w: 600, h: 700, spots: SPOTS_TALL, win: { x: 20, y: 120, w: 560 }, slot: 70, tabW: 20, tabVis: 9,
-    n1: { x: 225, y: 260, w: 150 }, n2: { x: 400, y: 500, w: 108 }, cozy: { x: 50, y: 38, w: 500 },
-    enter: [620, 740], cursor: 1.6, ring: 1.5, bar: 480, zoom: 0.1, pad: 18, align: 0.38
-  };
-
-  (function stroll() {
+  // ---------- The small Park ----------
+  // Real clips as cards on a canvas, joined by a trail, and moved the way Park moves: one transform on one root.
+  // Left alone, the camera walks the trail and each clip plays where it lands. Grab the canvas and the walk stops.
+  // As in the app, a card is a picture until you're at it, so only one clip ever loads at a time.
+  (function smallPark() {
     const $ = id => document.getElementById(id);
-    const look = $("look"), track = $("stroll"), hold = $("hold"), walk = $("walk"), scene = $("scene"), canvas = $("canvas");
-    const win = $("win"), svg = $("walkTrails"), urlbar = $("urlbar"), cursor = $("cursor"), ring = $("ring");
-    const pin = $("walkPin"), legend = $("legend"), top = $("top");
-    const typed = urlbar.querySelector(".typed"), caret = urlbar.querySelector(".caret");
-    const caps = [...$("cap").children], titles = [...$("title").children];
-    const ACTIVE = 0, URL = "something.com";
-    const radius = w => 3 + w * 0.05;
+    const look = $("look"), top = $("top"), meadow = $("meadow"), view = $("view"), world = $("world"), svg = $("meadowTrails");
+    const tags = $("tags"), pin = $("stopPin"), dialHand = $("dialHand"), dialText = $("dialText");
+    const title = $("title"), cap = $("cap"), way = $("way"), walkBtn = $("walkStop");
+    const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+    const quiet = reduced || navigator.connection?.saveData;
 
-    $("wincol").innerHTML = T.article();
+    // Where each stop sits on the canvas, in canvas pixels. At 100% a clip is 1000 wide.
+    const W = 1000, H = 617;
+    const SPOTS = [[0, 300], [1320, 80], [2640, 360], [3860, 120], [3180, 1290], [1800, 1450], [420, 1270]];
+    const BOX = { x: 0, y: 80, w: 4860, h: 1987 };
+    const stops = [...world.querySelectorAll(".stop")].map((el, i) => ({
+      el, shot: el.querySelector(".shot"), clip: el.dataset.clip, where: el.dataset.where,
+      name: el.querySelector("b").textContent, words: el.querySelector("figcaption span").textContent,
+      x: SPOTS[i][0], y: SPOTS[i][1]
+    }));
+    const INTRO = [cap.firstElementChild.textContent, "That's really Park in there. Swipe along the trail and it'll show you around."];
+    const OUTRO = ["Zoom out.", "Everything's right where you left it. Even you."];
 
-    // Everything but the card you're reading sits in one layer, so cozy mode can blur it all at once
-    const back = document.createElement("div");
-    back.className = "back";
-    canvas.insertBefore(back, svg);
-    back.appendChild(svg);
-    const card = (hue, tpl, cls, s, parent = back) => {
-      const d = document.createElement("div");
-      d.className = "card " + cls;
-      d.style.cssText = `left:${s.x}px;top:${s.y}px;width:${s.w}px;border-radius:${radius(s.w)}px;--c:${HUES[hue][0]};--c2:${HUES[hue][1]}`;
-      d.innerHTML = `<div class="pg">${T[tpl]()}</div>`;
-      parent.appendChild(d);
-      return d;
-    };
-    const rect = s => ({ x: s.x, y: s.y, w: s.w, h: s.w * 1.25 });
-    const trail = (a, b) => footpath(svg, edgePath(rect(a), rect(b)));
-    const strip = $("strip");
+    // ---- The title and caption, one pair for each stop
+    const add = (box, text) => { const s = document.createElement("span"); s.textContent = text; box.appendChild(s); };
+    stops.forEach(s => { add(title, s.name); add(cap, s.words); });
+    add(title, OUTRO[0]); add(cap, OUTRO[1]);
+    const say = k => [title, cap].forEach(box => [...box.children].forEach((c, j) => c.classList.toggle("on", j === k)));
 
-    // Everything the layout decides. build() draws it for the wide scene or the tall one,
-    // and again whenever the frame crosses between them.
-    let L, flies = [], new1, new2, page1, story, link, linkTrail, cq, S, rx, ry, tx, ty, TAB_W, TAB_VIS, TAB_X, TAB_Y;
-    function build(next) {
-      L = next;
-      scene.classList.toggle("tall", L === TALL);
-      svg.setAttribute("viewBox", `0 0 ${L.w} ${L.h}`);
-      strip.replaceChildren();
-      flies.forEach(f => f.el.remove());
-      if (new1) { new1.remove(); new2.remove(); }
-      svg.querySelectorAll(":scope > path").forEach(p => p.remove());
-      svg.querySelector("defs").replaceChildren();
-
-      // Tabs sit in slots after the window lights; each favicon is a small square centred in its slot
-      // and in the 44px strip. The first tab is the active one.
-      const SLOT = L.slot;
-      TAB_W = L.tabW; TAB_VIS = L.tabVis;
-      TAB_X = L.win.x + 1 + SLOT + TAB_W / 2 - TAB_VIS / 2; TAB_Y = L.win.y + 1 + 22 - TAB_VIS * 1.25 / 2;
-
-      // The tab strip: dividers between the idle tabs, and the active tab as one shape with the toolbar,
-      // rounded at the top and filleted out at the feet (8px, drawn as quarter-circle cubics).
-      const end = L.win.w - 2, x0 = SLOT + ACTIVE * TAB_W - 2, x1 = x0 + TAB_W + 4, B = 43.5, k = 4.4;
-      strip.setAttribute("viewBox", `0 0 ${end} 44`);
-      let d = `M0 ${B}H${x0 - 8}M${x1 + 8} ${B}H${end}`;
-      for (let i = 0; i < L.spots.length - 1; i++) if (i !== ACTIVE - 1 && i !== ACTIVE) d += `M${SLOT + TAB_W + 0.5 + i * TAB_W} 14V30`;
-      el("path", { d, class: "rule" }, strip);
-      el("path", { class: "act", d: `M${x0 - 8} ${B}C${x0 - 8 + k} ${B} ${x0} ${B - 8 + k} ${x0} ${B - 8}V16C${x0} ${16 - k} ${x0 + 8 - k} 8 ${x0 + 8} 8H${x1 - 8}C${x1 - 8 + k} 8 ${x1} ${16 - k} ${x1} 16V${B - 8}C${x1} ${B - 8 + k} ${x1 + 8 - k} ${B} ${x1 + 8} ${B}` }, strip);
-
-      // Each tab flies to a spot; the order is scrambled so the flights cross.
-      const byId = {};
-      flies = L.spots.map((s, n) => {
-        const tab = (n * 7) % L.spots.length;
-        const node = card(n % 6, ["article", "gallery", "docs", "landing"][n % 4], "fly", s);
-        node.insertAdjacentHTML("beforeend", `<i class="fav"></i>`);
-        const f = { ...s, el: node, tab, pg: node.firstElementChild, fav: node.lastElementChild };
-        if (s.id) byId[s.id] = f;
-        return f;
-      });
-      flies.forEach(f => { if (f.from) f.trail = trail(byId[f.from], f); });
-
-      // The page that gets typed in (a long read, on top of everything), and the one a link in it leads to.
-      // Cozy mode brings the first one up close, still 4:5, in the middle of the canvas.
-      const N1 = L.n1, N2 = L.n2, COZY = L.cozy, K = COZY.w / N1.w;
-      new1 = card(0, "story", "new beam off", N1, canvas); new2 = card(3, "gallery", "new beam off", N2);
-      back.appendChild(pin);
-      page1 = new1.firstElementChild; story = page1.firstElementChild;
-      link = new1.querySelector(".link"); linkTrail = trail(N1, N2);
-      // How far the page scrolls in cozy mode, in card widths (cqw): far enough to bring the link 60% of the way down
-      cq = N1.w / 100;
-      const mid = link.offsetTop + link.offsetHeight / 2;
-      S = Math.min(mid / cq - 75, (story.offsetTop + story.offsetHeight) / cq - 118);
-      // Where the pointer rests while the page scrolls under it, and where it clicks: the link, once it's in view
-      rx = COZY.x + COZY.w * 0.74; ry = COZY.y + COZY.w * 0.7;
-      tx = COZY.x + (link.offsetLeft + link.offsetWidth * 0.45) * K; ty = COZY.y + (mid - S * cq) * K;
-    }
-    build(innerWidth < 861 ? TALL : WIDE);
-
-    const seg = (p, a, b) => Math.min(1, Math.max(0, (p - a) / (b - a)));
-    const out = t => 1 - Math.pow(1 - t, 3);
-    const inout = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    const lerp = (a, b, t) => a + (b - a) * t;
-    let zoom = 0.1;      // how far the last beat zooms out; set by fit() so a narrow frame still shows the last page
-
-    function render(p) {
-      const N1 = L.n1, COZY = L.cozy;
-      // The window dissolves as its tabs lift off onto the canvas
-      const wf = 1 - seg(p, 0.12, 0.22);
-      win.style.opacity = wf;
-      win.style.transform = `scale(${0.96 + 0.04 * wf})`;
-      win.style.visibility = wf ? "" : "hidden";
-      flies.forEach(f => {
-        const t = out(seg(p, 0.12 + f.tab * 0.005, 0.3 + f.tab * 0.005));
-        const s = lerp(TAB_VIS / f.w, 1, t);
-        const x = lerp(TAB_X + f.tab * TAB_W, f.x, t), y = lerp(TAB_Y, f.y, t);
-        // Scaled uniformly, so the stroke and corners are re-sized to stay 1px and 2px–r on screen.
-        // A favicon has no outline; the card grows in as the favicon colour fades out.
-        f.el.style.transform = `translate(${x - f.x}px, ${y - f.y}px) scale(${s})`;
-        const grow = seg(t, 0.25, 0.55);
-        f.el.style.borderWidth = `${grow / s}px`;
-        f.el.style.borderRadius = `${lerp(2, radius(f.w), t) / s}px`;
-        f.el.style.backgroundColor = `rgba(255, 254, 250, ${grow})`;
-        f.el.style.setProperty("--g", grow);
-        f.fav.style.opacity = 1 - grow;
-        f.pg.style.opacity = seg(t, 0.45, 0.9);
-        if (f.trail) f.trail.style.strokeDashoffset = 1 - out(seg(p, 0.31 + f.tab * 0.0025, 0.36 + f.tab * 0.0025));
-      });
-      // The canvas dims and a URL bar comes forward to take an address
-      const bar = out(seg(p, 0.43, 0.47)) * (1 - out(seg(p, 0.545, 0.575)));
-      urlbar.style.opacity = bar;
-      urlbar.style.transform = `scale(${0.97 + 0.03 * bar})`;
-      canvas.style.opacity = 1 - 0.6 * bar;
-      const n = p < 0.555 ? Math.round(seg(p, 0.48, 0.535) * URL.length) : URL.length;
-      typed.textContent = URL.slice(0, n);
-      caret.classList.toggle("on", p > 0.43 && p < 0.555);
-      // The page lands as a card
-      const n1 = out(seg(p, 0.555, 0.59));
-      new1.style.opacity = n1;
-      new1.style.transform = `scale(${0.9 + 0.1 * n1})`;
-      page1.style.opacity = seg(p, 0.59, 0.615);
-      new1.classList.toggle("off", p < 0.555 || p > 0.615);
-      // Cozy mode: the card comes up close and everything else blurs. The page scrolls; after the click it settles back.
-      const cz = inout(seg(p, 0.62, 0.675)) * (1 - inout(seg(p, 0.875, 0.91)));
-      const w = lerp(N1.w, COZY.w, cz);
-      new1.style.left = `${lerp(N1.x, COZY.x, cz)}px`;
-      new1.style.top = `${lerp(N1.y, COZY.y, cz)}px`;
-      new1.style.width = `${w}px`;
-      new1.style.borderRadius = `${radius(w)}px`;
-      new1.style.boxShadow = cz ? `0 ${10 + 30 * cz}px ${18 + 54 * cz}px -12px rgba(54, 74, 6, 0.55)` : "";
-      story.style.transform = `translateY(${(-S * inout(seg(p, 0.69, 0.75))).toFixed(2)}cqw)`;
-      back.style.filter = cz > 0.001 ? `blur(${(6 * cz).toFixed(2)}px)` : "";
-      back.style.opacity = 1 - 0.3 * cz;
-      // The pointer arrives and the page scrolls under it; then it finds the link further down and follows it
-      const enter = inout(seg(p, 0.665, 0.7)), go = inout(seg(p, 0.76, 0.82));
-      const cx = lerp(lerp(L.enter[0], rx, enter), tx, go), cy = lerp(lerp(L.enter[1], ry, enter), ty, go) - Math.sin(go * Math.PI) * 40;
-      const press = seg(p, 0.835, 0.845) * (1 - seg(p, 0.85, 0.865));
-      cursor.style.opacity = seg(p, 0.665, 0.68) * (1 - seg(p, 0.865, 0.885));
-      cursor.style.transform = `translate(${cx - 5}px, ${cy - 3}px) scale(${L.cursor * (1 - 0.15 * press)})`;
-      const rt = seg(p, 0.84, 0.875);
-      ring.style.transform = `translate(${tx}px, ${ty}px) scale(${L.ring * (0.2 + rt)})`;
-      ring.style.opacity = rt > 0 && rt < 1 ? 1 - rt : 0;
-      link.classList.toggle("hot", p > 0.82 && p < 0.9);
-      // Back on the canvas, a trail runs to the new page
-      linkTrail.style.strokeDashoffset = 1 - out(seg(p, 0.905, 0.935));
-      const n2 = out(seg(p, 0.92, 0.95));
-      new2.style.opacity = n2;
-      new2.style.transform = `scale(${0.9 + 0.1 * n2})`;
-      new2.firstElementChild.style.opacity = seg(p, 0.95, 0.97);
-      new2.classList.toggle("off", p < 0.92 || p > 0.97);
-      // You are here, and the key fades in as you zoom out to take it all in
-      const drop = seg(p, 0.94, 0.965);
-      pin.style.opacity = drop;
-      pin.style.transform = `translateY(${(1 - out(drop)) * -26}px)`;
-      canvas.style.transform = `scale(${1 - zoom * out(seg(p, 0.96, 1))})`;
-      legend.style.opacity = seg(p, 0.965, 0.995);
-      const idx = p < 0.04 ? 0 : p < 0.12 ? 1 : p < 0.42 ? 2 : p < 0.615 ? 3 : p < 0.76 ? 4 : p < 0.94 ? 5 : 6;
-      caps.forEach((c, i) => c.classList.toggle("on", i === idx));
-      titles.forEach((c, i) => c.classList.toggle("on", i === idx));
-    }
-
-    // Each layout is drawn whole in its frame: the wide scene on a desktop, the tall one on a phone.
-    function fit() {
-      const want = innerWidth < 861 ? TALL : WIDE;
-      if (want !== L) build(want);
-      const W = walk.clientWidth, H = walk.clientHeight;
-      const pad = 2 * (L.pad || 0), k = Math.min(W / (L.w + pad), H / (L.h + pad)), y0 = (H - L.h * k) * (L.align ?? 0.5);
-      zoom = L.zoom ?? 1 - Math.min(0.9, W / k / 820);
-      scene.style.transform = `translate(${(W - L.w * k) / 2}px, ${y0}px) scale(${k})`;
-      // On a phone the key sits just under the scene when there's room for it
-      legend.style.bottom = L === TALL ? `${Math.max(10, H - y0 - L.h * k - legend.offsetHeight - 14)}px` : "";
-      // The URL bar fits the visible part of the scene, clear of the edges
-      const bw = Math.min(L.bar, (W / k) * 0.76);
-      urlbar.style.width = `${bw}px`;
-      urlbar.style.left = `${L.w / 2 - bw / 2}px`;
-      update();
-    }
-    // Scroll (0–1 through the track) → scene time. The slow and flat stretches are rests: the crowded window,
-    // the canvas once every tab has landed, the new card, a moment in cozy mode, and the finished canvas,
-    // held before the section unpins.
-    const PACE = [[0, 0], [0.025, 0.04], [0.1, 0.11], [0.31, 0.4], [0.36, 0.43], [0.48, 0.6], [0.51, 0.62], [0.56, 0.675], [0.65, 0.755], [0.68, 0.76], [0.8, 0.91], [0.86, 0.965], [0.9, 1], [1, 1]];
-    const pace = s => {
-      for (let i = 1; i < PACE.length; i++) {
-        const [s1, p1] = PACE[i];
-        if (s <= s1) { const [s0, p0] = PACE[i - 1]; return p0 + (p1 - p0) * (s - s0) / (s1 - s0); }
+    // ---- The canvas's parts
+    stops.forEach((s, i) => {
+      s.tag = document.createElement("div");
+      s.tag.className = "tag";
+      s.tag.innerHTML = "<span></span><small></small>";
+      s.tag.firstChild.textContent = s.name.replace(/\.$/, "");
+      s.tag.lastChild.textContent = s.where;
+      tags.appendChild(s.tag);
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.setAttribute("aria-label", s.name);
+      dot.innerHTML = "<i></i>";
+      dot.addEventListener("click", () => { walk(false); land(i); });
+      way.appendChild(dot);
+      s.dot = dot;
+      if (i) {
+        const p = el("path", { class: "trail", d: edgePath({ x: stops[i - 1].x, y: stops[i - 1].y, w: W, h: H }, { x: s.x, y: s.y, w: W, h: H }) }, svg);
+        p.style.strokeWidth = 11; p.style.strokeDasharray = "0 34";
       }
-      return 1;
-    };
-    function update() {
-      const r = track.getBoundingClientRect(), len = Math.max(1, track.offsetHeight - innerHeight);
-      render(reduced ? 1 : pace(Math.min(1, Math.max(0, -r.top / len))));
-      // The header takes on the band's colour while it's over it
-      const b = look.getBoundingClientRect();
-      top.classList.toggle("on-band", b.top < 60 && b.bottom > 60);
+    });
+    for (let a = 0; a < 40; a++) {
+      if (a > 14 && a < 26) continue;
+      el("path", { d: "M32 4.5v5", transform: `rotate(${a * 9} 32 32)` }, $("dialTicks"));
     }
-    if (reduced) { track.style.height = "auto"; hold.style.position = "static"; hold.style.height = "auto"; walk.style.height = innerWidth < 861 ? "116vw" : "62vw"; }
-    addEventListener("scroll", update, { passive: true });
-    addEventListener("resize", fit);
-    document.fonts.ready.then(fit);
-    fit();
+
+    // ---- The camera: the canvas point at the middle of the view, and the zoom
+    let vw = 0, vh = 0, fit = { x: 0, y: 0, z: 1 }, cam = { x: 0, y: 0, z: 1 }, zMin = 0.2, zMax = 1.3;
+    let pinAt = { x: 0, y: 0 }, raf = 0, still = 0;
+    const pinSpot = s => ({ x: s.x + W * 0.84, y: s.y });
+    function measure() {
+      vw = view.clientWidth; vh = view.clientHeight;
+      const z = Math.min((vw - 110) / BOX.w, (vh - 148) / BOX.h);
+      fit = { x: BOX.x + BOX.w / 2, y: BOX.y + BOX.h / 2 + 30 / z, z };
+      zMin = z * 0.8; zMax = 1.3;
+    }
+    // A card at reading size, clear of the island
+    function cozy(s) {
+      const z = Math.min((vw - 150) / W, (vh - 112) / H, 1.25);
+      return { x: s.x + W / 2, y: s.y + H / 2 + 30 / z, z };
+    }
+    function apply() {
+      const { x, y, z } = cam;
+      world.style.transform = `translate(${vw / 2 - x * z}px, ${vh / 2 - y * z}px) scale(${z})`;
+      const sx = wx => vw / 2 + (wx - x) * z, sy = wy => vh / 2 + (wy - y) * z;
+      stops.forEach(s => { s.tag.style.transform = `translate(${sx(s.x + W / 2).toFixed(1)}px, ${(sy(s.y + H) + 9).toFixed(1)}px)`; });
+      tags.style.opacity = clamp((0.6 - z) / 0.16, 0, 1);
+      pin.style.transform = `translate(${sx(pinAt.x).toFixed(1)}px, ${sy(pinAt.y).toFixed(1)}px)`;
+      dialHand.setAttribute("transform", `rotate(${(clamp(Math.log(z / zMin) / Math.log(zMax / zMin), 0, 1) * 252 - 126).toFixed(1)} 32 32)`);
+      dialText.textContent = Math.round(z * 100) + "%";
+      // Held on the GPU while it moves; at rest it's drawn sharp at this zoom
+      world.classList.add("moving");
+      clearTimeout(still);
+      still = setTimeout(() => world.classList.remove("moving"), 160);
+    }
+    // The canvas can't be lost: however far it's dragged, its cards stay in view, give or take a little.
+    const keepNear = () => {
+      const near = (c, lo, len, size) => {
+        const half = size / 2 / cam.z, slack = 90 / cam.z, mid = lo + len / 2;
+        return len / 2 + slack < half ? clamp(c, mid - slack, mid + slack) : clamp(c, lo + half - slack, lo + len - half + slack);
+      };
+      cam.x = near(cam.x, BOX.x, BOX.w, vw);
+      cam.y = near(cam.y, BOX.y, BOX.h, vh);
+    };
+    const ease = k => k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+    // A flight: out a little if it's a long way across, along, and in. Lands where it's told, whatever it was doing.
+    function fly(to, pinTo, done) {
+      cancelAnimationFrame(raf);
+      const from = { ...cam }, p0 = { ...pinAt };
+      if (reduced) { cam = { ...to }; pinAt = pinTo; apply(); done?.(); return; }
+      const dist = Math.hypot(to.x - from.x, to.y - from.y), low = Math.min(from.z, to.z);
+      const dip = low > fit.z * 1.5 ? Math.max(0.3, Math.log(Math.max(1, dist * low / (vw * 0.7))) + 0.2) : 0;
+      const dur = clamp(760 + dist * 0.16 + dip * 300, 760, 1500), t0 = performance.now();
+      const step = t => {
+        const k = Math.min(1, (t - t0) / dur), e = ease(k);
+        cam.x = from.x + (to.x - from.x) * e;
+        cam.y = from.y + (to.y - from.y) * e;
+        cam.z = Math.exp(Math.log(from.z) + (Math.log(to.z) - Math.log(from.z)) * e - dip * Math.sin(Math.PI * e));
+        pinAt = { x: p0.x + (pinTo.x - p0.x) * e, y: p0.y + (pinTo.y - p0.y) * e };
+        apply();
+        if (k < 1) raf = requestAnimationFrame(step); else done?.();
+      };
+      raf = requestAnimationFrame(step);
+    }
+
+    // ---- The one clip
+    const video = document.createElement("video");
+    video.muted = video.defaultMuted = true;
+    video.playsInline = true;
+    video.preload = "auto";
+    video.setAttribute("aria-hidden", "true");
+    let dwell = 0, walking = false, at = -1, landed = false, inView = false, begun = false;
+    function play(s, loop) {
+      clearTimeout(dwell);
+      s.shot.classList.add("beam");
+      s.shot.classList.remove("off");
+      if (video.parentNode !== s.shot) s.shot.appendChild(video);
+      const src = `clips/${s.clip}.mp4`;
+      if (video.getAttribute("src") !== src) video.setAttribute("src", src); else video.currentTime = 0;
+      video.loop = loop;
+      if (inView) video.play().catch(() => {});
+      // If a clip never arrives, the walk still goes on
+      if (!loop) dwell = setTimeout(() => { if (walking) next(); }, 18000);
+    }
+    function hush() {
+      video.pause();
+      const shot = video.parentNode;
+      if (shot) { shot.classList.remove("playing", "beam", "off"); video.remove(); }
+    }
+    video.addEventListener("playing", () => {
+      const shot = video.parentNode;
+      if (shot) { shot.classList.add("playing", "off"); setTimeout(() => shot.classList.remove("beam"), 800); }
+    });
+    video.addEventListener("ended", () => { if (walking) next(); });
+    video.addEventListener("error", () => { const shot = video.parentNode; if (shot) shot.classList.remove("beam"); });
+
+    // ---- The walk
+    function setLanded(on) { landed = on; meadow.classList.toggle("landed", on); }
+    function walk(on) {
+      walking = on;
+      meadow.classList.toggle("walking", on);
+      walkBtn.setAttribute("aria-label", on ? "Pause the walk" : "Walk the trail");
+      video.loop = !on;
+      if (!on) clearTimeout(dwell);
+    }
+    function mark(i) { stops.forEach((s, j) => { s.dot.classList.toggle("on", j === i); s.dot.classList.toggle("done", j < i); s.el.classList.toggle("here", j === i); }); }
+    function land(i) {
+      clearTimeout(dwell);
+      hush();
+      setLanded(false);
+      at = i; say(i + 1); mark(i);
+      const s = stops[i];
+      fly(cozy(s), pinSpot(s), () => { setLanded(true); play(s, !walking); });
+    }
+    function next() { if (at + 1 < stops.length) land(at + 1); else home(true); }
+    function home(outro) {
+      clearTimeout(dwell);
+      hush();
+      setLanded(false);
+      if (outro) { walk(false); at = -1; mark(-1); }
+      say(outro ? stops.length + 1 : 0);
+      fly(fit, pinAt, null);
+    }
+    // A hand on the canvas stops the walk and leaves the card
+    function grab() {
+      cancelAnimationFrame(raf);
+      clearTimeout(settling);
+      walk(false);
+      meadow.classList.add("roamed");
+      if (landed) { setLanded(false); hush(); say(0); }
+    }
+    // As in the app: let go near reading size and the card in the middle opens. Zoomed right out, the canvas fits.
+    let settling = 0;
+    function settle() {
+      if (cam.z < fit.z * 1.1) return home(false);
+      if (cam.z < 0.55) return;
+      let best = -1, near = Infinity;
+      stops.forEach((s, i) => { const d = Math.hypot(s.x + W / 2 - cam.x, s.y + H / 2 - cam.y); if (d < near) { near = d; best = i; } });
+      if (near * cam.z < vw * 0.4) land(best);
+    }
+    function zoomAt(px, py, f) {
+      const z = clamp(cam.z * f, zMin, zMax);
+      cam.x += (px - vw / 2) * (1 / cam.z - 1 / z);
+      cam.y += (py - vh / 2) * (1 / cam.z - 1 / z);
+      cam.z = z;
+      keepNear(); apply();
+      clearTimeout(settling);
+      settling = setTimeout(settle, 220);
+    }
+
+    // ---- Hands
+    let down = null;
+    meadow.addEventListener("pointerdown", e => {
+      if (!free || e.button) return;
+      cancelAnimationFrame(raf);
+      down = { x: e.clientX, y: e.clientY, lx: e.clientX, ly: e.clientY, t: performance.now(), vx: 0, vy: 0, moved: false, stop: e.target.closest(".stop") };
+      meadow.setPointerCapture(e.pointerId);
+    });
+    meadow.addEventListener("pointermove", e => {
+      if (!down) return;
+      if (!down.moved && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 5) return;
+      if (!down.moved) { down.moved = true; grab(); meadow.classList.add("dragging"); }
+      const now = performance.now(), dt = Math.max(1, now - down.t), dx = e.clientX - down.lx, dy = e.clientY - down.ly;
+      cam.x -= dx / cam.z; cam.y -= dy / cam.z;
+      keepNear(); apply();
+      down.vx = dx / dt; down.vy = dy / dt; down.lx = e.clientX; down.ly = e.clientY; down.t = now;
+    });
+    function letGo() {
+      if (!down) return;
+      const d = down;
+      down = null;
+      meadow.classList.remove("dragging");
+      if (d.moved) {
+        // A little glide after a throw
+        let vx = d.vx, vy = d.vy, last = performance.now();
+        if (reduced || performance.now() - d.t > 60) vx = vy = 0;
+        const step = t => {
+          const dt = t - last; last = t;
+          cam.x -= vx * dt / cam.z; cam.y -= vy * dt / cam.z;
+          keepNear(); apply();
+          const f = Math.pow(0.994, dt); vx *= f; vy *= f;
+          if (Math.hypot(vx, vy) > 0.03) raf = requestAnimationFrame(step); else settle();
+        };
+        raf = requestAnimationFrame(step);
+        return;
+      }
+      const i = stops.findIndex(s => s.el === d.stop);
+      if (i >= 0 && i === at && landed) { if (video.paused) video.play().catch(() => {}); else video.pause(); return; }
+      if (i >= 0) { walk(false); meadow.classList.add("roamed"); land(i); return; }
+      if (landed) { walk(false); home(false); }
+    }
+    meadow.addEventListener("pointerup", letGo);
+    meadow.addEventListener("pointercancel", letGo);
+    $("isle").addEventListener("pointerdown", e => e.stopPropagation());
+    // The trackpad: a pinch or ⌘-scroll zooms, a sideways swipe pans, and a plain scroll is the page's.
+    meadow.addEventListener("wheel", e => {
+      if (!free) return;
+      const r = view.getBoundingClientRect();
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        grab();
+        zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-e.deltaY * (e.ctrlKey ? 0.012 : 0.003)));
+      } else if (Math.abs(e.deltaX) > Math.abs(e.deltaY) * 1.2) {
+        e.preventDefault();
+        grab();
+        cam.x += e.deltaX / cam.z;
+        keepNear(); apply();
+        clearTimeout(settling);
+        settling = setTimeout(settle, 260);
+      }
+    }, { passive: false });
+    // Safari sends a pinch as a gesture instead
+    let pinch = 1;
+    meadow.addEventListener("gesturestart", e => { if (!free) return; e.preventDefault(); pinch = 1; grab(); });
+    meadow.addEventListener("gesturechange", e => {
+      if (!free) return;
+      e.preventDefault();
+      const r = view.getBoundingClientRect();
+      zoomAt(e.clientX - r.left, e.clientY - r.top, e.scale / pinch);
+      pinch = e.scale;
+    });
+    meadow.addEventListener("keydown", e => {
+      if (!free) return;
+      const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key] || (e.metaKey && { ArrowDown: 1, ArrowUp: -1 }[e.key]);
+      if (step) { e.preventDefault(); walk(false); land((at + step + stops.length) % stops.length); }
+      else if (e.key === "Escape") { walk(false); home(false); }
+    });
+    $("prevStop").addEventListener("click", () => { walk(false); land((at - 1 + stops.length) % stops.length); });
+    $("nextStop").addEventListener("click", () => { walk(false); land((at + 1) % stops.length); });
+    $("fitAll").addEventListener("click", () => { walk(false); home(false); });
+    walkBtn.addEventListener("click", () => {
+      if (walking) { walk(false); return; }
+      walk(true);
+      if (!landed || video.ended) next();
+    });
+
+    // ---- A canvas where there's a pointer and room, and a row to swipe everywhere else
+    const roomy = matchMedia("(min-width: 861px) and (pointer: fine)");
+    let free = false;
+    function arrange() {
+      free = roomy.matches;
+      cancelAnimationFrame(raf);
+      hush();
+      setLanded(false);
+      walk(false);
+      meadow.classList.toggle("free", free);
+      cap.firstElementChild.textContent = free ? INTRO[0] : INTRO[1];
+      if (free) {
+        stops.forEach(s => { s.el.style.left = s.x + "px"; s.el.style.top = s.y + "px"; });
+        measure();
+        cam = { ...fit };
+        pinAt = pinSpot(stops[0]);
+        at = -1; mark(-1); say(0);
+        apply();
+        begun = false;
+        if (inView) begin();
+      } else {
+        stops.forEach(s => { s.el.style.left = s.el.style.top = ""; });
+        world.style.transform = "";
+        pickRow();
+      }
+    }
+    // On a phone, whichever clip is in the middle of the row plays
+    function pickRow() {
+      if (free || quiet || !inView) return;
+      const mid = world.getBoundingClientRect().left + world.clientWidth / 2;
+      let best = stops[0], near = Infinity;
+      stops.forEach(s => { const r = s.el.getBoundingClientRect(), d = Math.abs(r.left + r.width / 2 - mid); if (d < near) { near = d; best = s; } });
+      if (video.parentNode !== best.shot) { hush(); play(best, true); }
+    }
+    let rowT = 0;
+    world.addEventListener("scroll", () => { clearTimeout(rowT); rowT = setTimeout(pickRow, 120); }, { passive: true });
+    // Tapping a clip plays it when nothing plays on its own
+    stops.forEach(s => s.el.addEventListener("click", () => { if (!free && quiet) { hush(); play(s, true); video.play().catch(() => {}); } }));
+
+    // The walk starts the first time the canvas comes into view, and everything rests while it's out of sight.
+    function begin() {
+      if (begun || !free) return;
+      begun = true;
+      if (quiet) return;
+      walk(true);
+      dwell = setTimeout(next, 1600);
+    }
+    new IntersectionObserver(([e]) => {
+      inView = e.isIntersecting;
+      if (!inView) { video.pause(); return; }
+      if (!free) return pickRow();
+      begin();
+      if (video.parentNode) video.play().catch(() => {});
+    }, { threshold: 0.5 }).observe(meadow);
+    document.addEventListener("visibilitychange", () => { if (document.hidden) video.pause(); else if (inView && video.parentNode) video.play().catch(() => {}); });
+
+    // The header takes on the band's colour while it's over it
+    const band = () => { const b = look.getBoundingClientRect(); top.classList.toggle("on-band", b.top < 60 && b.bottom > 60); };
+    addEventListener("scroll", band, { passive: true });
+    band();
+    roomy.addEventListener("change", arrange);
+    let sizing = 0;
+    addEventListener("resize", () => { clearTimeout(sizing); sizing = setTimeout(() => { if (!free) return; measure(); if (landed && at >= 0) cam = { ...cozy(stops[at]) }; else if (at < 0) cam = { ...fit }; apply(); }, 120); });
+    arrange();
   })();
 
   // ---------- The trailhead ----------

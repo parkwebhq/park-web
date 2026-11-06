@@ -539,8 +539,6 @@
   .trailmap svg { width: min(100%, 440px); height: auto; overflow: visible; pointer-events: none; }
   .trailmap .you .halo { transform-box: fill-box; transform-origin: center; animation: halo 2.4s ease-out infinite; }
   .trailmap figcaption { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; justify-content: center; text-align: center; color: var(--on-lime); font-size: 16px; font-weight: 500; }
-  .trailmap figcaption b { font-family: var(--serif); font-weight: 700; font-size: clamp(34px, 3.2vw, 46px); letter-spacing: -0.03em; color: var(--ink); line-height: 1; }
-  .trailmap figcaption small { flex-basis: 100%; font-size: 13px; color: #4a6151; }
 
   /* ---------- Progress rows (hidden for now) ---------- */
   .rows { list-style: none; }
@@ -826,7 +824,7 @@
                 <li><h3>Separate canvases, separate logins</h3><p>Each new Space gets its own website data, so you can be signed in to the same site as different people in Work and Personal.</p></li>
                 <li><h3>Make each Space yours</h3><p>Give it a name, an icon or emoji, and its own colours. Switch with <kbd>⌘1</kbd> to <kbd>⌘9</kbd>, and move cards between Spaces.</p></li>
                 <li><h3>A Private Space that forgets</h3><p><kbd>⌘0</kbd> opens a Space that's never saved or synced, with no AI. Clear it and it's gone.</p></li>
-                <li><h3>Independent windows</h3><p>A new window is a whole second canvas, fully separate from the first.</p></li>
+                <li><h3>One canvas, many windows</h3><p>Every window shows the same canvas, with one Space up in each. Pick a Space that's up in another window and the two swap.</p></li>
                 <li><h3>Peek before it's a card</h3><p>A link from Mail, Slack or anywhere else opens in a small window over what you're doing. <kbd>Esc</kbd> closes it and keeps nothing.</p></li>
                 <li><h3>Send it to the right Space</h3><p>One button turns a peek into a card, in whichever Space you pick. Sign in while peeking and you stay signed in.</p></li>
               </ul>
@@ -836,7 +834,7 @@
               <ul class="ways">
                 <li><h3>Pinch to get closer</h3><p>Pinch toward a card and it snaps into its cozy frame with a haptic tick. Keep pinching and the page goes full.</p></li>
                 <li><h3>Pan into a page</h3><p>Bring a card to the middle at reading size and it shows its frame, then opens when you let go.</p></li>
-                <li><h3>Cozy keeps the context</h3><p>The canvas blurs around the page, and the site's icon, title, description and colours sit beside it. Click a colour to copy its hex.</p></li>
+                <li><h3>Cozy keeps the context</h3><p>The canvas blurs around the page, and the site's icon, title and description sit beside it. Set your persona to Designer or Developer and its colours and fonts join them. Click a colour to copy its hex.</p></li>
                 <li><h3>Full, framed by the canvas</h3><p>The page fills the window with a sliver of canvas around it, lifted off with a soft shadow.</p></li>
                 <li><h3>Snapping is optional</h3><p>Prefer free zoom? Switch snapping off, and pages settle to the nearest level when your fingers stop.</p></li>
               </ul>
@@ -878,8 +876,8 @@
                 <li><h3>Find more like this</h3><p>AI names related pages and searches, and they fan out beside the page as a new thread, each with a note on why.</p></li>
                 <li><h3>Your model, even a local one</h3><p>Use Claude, OpenAI, or a model on your own Mac through Ollama or LM Studio. Keys stay in your Keychain.</p></li>
                 <li><h3>Asks before anything leaves</h3><p>Park shows exactly what would be sent and asks first. AI never runs in the Private Space.</p></li>
-                <li><h3>Design mode</h3><p>See a page's colours, fonts and spacing as editable rows at desktop, tablet and phone widths, then copy your changes out.</p></li>
-                <li><h3>Developer mode</h3><p>Flip a card over to see its page's DOM and console.</p></li>
+                <li><h3>The Workshop: Design</h3><p><kbd>⌥⌘E</kbd> opens a panel beside the page, with its colours, fonts and spacing as editable rows at desktop, tablet and phone widths. Copy your changes out when you're done.</p></li>
+                <li><h3>The Workshop: Developer</h3><p>The panel's other side shows the page's DOM, console and network requests. <kbd>⌥⌘I</kbd> goes straight there.</p></li>
                 <li><h3>Capture a page</h3><p>Grab the whole page, or drag a frame over just the part you want.</p></li>
               </ul>
             </div>
@@ -889,9 +887,9 @@
                 <li><h3>Native through and through</h3><p>Swift, AppKit and Apple's own WebKit. It feels like a Mac app because it is one.</p></li>
                 <li><h3>A canvas of glass</h3><p>Frosted or sheer glass over your desktop, or solid. Light, dark or system, in a warm, neutral or cool tone.</p></li>
                 <li><h3>Motion you choose</h3><p>Springy, precise or reduced. Springy keeps its momentum when you change your mind mid-flight.</p></li>
-                <li><h3>Yours to tune</h3><p>Rebind any keyboard shortcut and pick from eight app icons.</p></li>
+                <li><h3>Yours to tune</h3><p>Rebind any keyboard shortcut and pick from 28 app icons.</p></li>
                 <li><h3>Accessible</h3><p>The canvas is reachable with VoiceOver and the keyboard, and reduced motion is honoured throughout.</p></li>
-                <li><h3>In English and French</h3><p>Every word in the app is localised.</p></li>
+                <li><h3>In ten languages</h3><p>English, French, Spanish, German, Brazilian Portuguese, Italian, Japanese, Simplified Chinese, Korean and Icelandic, with every word in the app localised.</p></li>
               </ul>
             </div>
           </div>
@@ -957,7 +955,7 @@
               <g transform="translate(0 -62)"><rect x="-128" y="-40" width="256" height="62" rx="14" fill="#134634"/><path d="M-14 21L0 37 14 21Z" fill="#134634"/><text y="2" text-anchor="middle" fill="#f3f1e8" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="27" letter-spacing="2.6">YOU ARE HERE</text></g>
             </g>
           </svg>
-          <figcaption><b class="num" id="pct">68%</b><span>of the way to opening day</span><small id="updated"></small></figcaption>
+          <figcaption>On the way to opening day</figcaption>
         </figure>
       </div>
     </div>
@@ -993,7 +991,6 @@
 -->
 <script type="application/json" id="status-data">
 {
-  "updated": "2026-10-21",
   "features": [
     { "name": "The canvas",   "note": "Wide-open space for every page you have open.", "progress": 90 },
     { "name": "Cards",        "note": "Zoom way out and every page still looks like itself.", "progress": 85 },
@@ -1584,17 +1581,14 @@
   // The trail sticker is the progress bar: the average walks it, and you are where the paving stops.
   const trailmap = (function () {
     const fig = document.getElementById("trailmap"), svg = fig.querySelector("svg");
-    const path = svg.querySelector(".walked"), you = svg.querySelector(".you"), pct = document.getElementById("pct");
+    const path = svg.querySelector(".walked"), you = svg.querySelector(".you");
     const avg = Math.round(STATUS.features.reduce((s, f) => s + f.progress, 0) / STATUS.features.length);
     const len = path.getTotalLength();
-    svg.setAttribute("aria-label", `The Park trail sticker, ${avg}% walked: ${avg}% of the way to opening day`);
-    const [y, mo, da] = STATUS.updated.split("-").map(Number);
-    document.getElementById("updated").textContent = "Trail map updated " + new Date(y, mo - 1, da).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    svg.setAttribute("aria-label", "The Park trail sticker, with a pin partway along the trail to opening day");
     const set = k => {
       const walked = len * avg / 100 * k, pt = path.getPointAtLength(walked);
       path.setAttribute("stroke-dasharray", `${walked} ${len}`);
       you.setAttribute("transform", `translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)})`);
-      pct.textContent = Math.round(avg * k) + "%";
     };
     set(reduced ? 1 : 0);
     return function walk() {

@@ -664,7 +664,7 @@
             <div><strong>You're on the list.</strong><p>See you in the park. <span class="got"></span></p></div>
           </div>
         </div>
-        <p class="arc-link rise" style="--d:.44s">Coming from Arc? <a href="#arc">See what comes with you.</a></p>
+        <p class="arc-link rise" style="--d:.44s">Coming from Arc? <a href="#arc">Bring your Spaces over in one drag.</a></p>
       </div>
     </div>
     <div class="map" id="map" aria-hidden="true">
@@ -754,10 +754,13 @@
       </div>
       <ul class="moves reveal">
         <li class="key" aria-hidden="true"><span>In Arc</span><span>In Park</span></li>
+        <li><span class="from"><span class="vh">In Arc: </span>Your whole sidebar</span><b><span class="vh">In Park: </span>Import from Arc</b><p>Drag Arc in and your Spaces, pinned tabs, folders and favourites come with it. Folders become clusters of cards.</p></li>
         <li><span class="from"><span class="vh">In Arc: </span>Spaces and Profiles</span><b><span class="vh">In Park: </span>Spaces</b><p>Each with its own logins, colours and icon. <kbd>⌘1</kbd> to <kbd>⌘9</kbd> to switch.</p></li>
         <li><span class="from"><span class="vh">In Arc: </span>Command Bar</span><b><span class="vh">In Park: </span>⌘K for everything</b><p>Jump to any page in any Space, or run a command.</p></li>
         <li><span class="from"><span class="vh">In Arc: </span>Little Arc</span><b><span class="vh">In Park: </span>Peek</b><p>Links from Mail or Slack open small, then become a card in the Space you pick.</p></li>
         <li><span class="from"><span class="vh">In Arc: </span>Archived tabs</span><b><span class="vh">In Park: </span>Stacks</b><p>Pages you haven't touched in a while fold into stacks you can flip through, and nothing gets thrown away.</p></li>
+        <li><span class="from"><span class="vh">In Arc: </span>Split View</span><b><span class="vh">In Park: </span>Side by side</b><p>Select a few cards and press Return. Two split, four make a quad.</p></li>
+        <li><span class="from"><span class="vh">In Arc: </span>Tidy Tabs</span><b><span class="vh">In Park: </span>Tidy</b><p>Select some cards and they sort into named groups by topic, with or without AI.</p></li>
         <li><span class="from"><span class="vh">In Arc: </span>Picture in Picture</span><b><span class="vh">In Park: </span>The mini player</b><p>Long videos keep playing in a corner.</p></li>
         <li><span class="from"><span class="vh">In Arc: </span>Arc Max</span><b><span class="vh">In Park: </span>AI on your terms</b><p>Bring your own model, and it asks before anything leaves.</p></li>
         <li><span class="from"><span class="vh">In Arc: </span>The sidebar</span><b><span class="vh">In Park: </span><span class="hl">The canvas</span></b><p>Every page is a card you can see. <kbd>⌘</kbd>-click a link and it opens as a new card beside its page, joined by a trail.</p></li>
@@ -796,14 +799,15 @@
         <!-- The forks: each plank turns the board to its trail. Edit a trail's features here; the counts follow. -->
         <div class="trailhead">
           <div class="planks" role="tablist" aria-label="Trails" aria-orientation="vertical">
-            <button class="plank" type="button" role="tab" id="plank-canvas" aria-controls="trail-canvas" aria-selected="true"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="4.5" width="21" height="19" rx="4"/><rect x="7.5" y="8.5" width="5" height="6" rx="1.2"/><rect x="15.5" y="10.5" width="5" height="6" rx="1.2"/><rect x="9.5" y="16.5" width="4" height="4" rx="1"/></svg><span>The canvas</span><b class="count">7</b></button>
-            <button class="plank" type="button" role="tab" id="plank-spaces" aria-controls="trail-spaces" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="8.5" width="15" height="15" rx="3.5"/><path d="M9.5 4.5h11a3 3 0 0 1 3 3v11"/></svg><span>Spaces &amp; Peek</span><b class="count">6</b></button>
-            <button class="plank" type="button" role="tab" id="plank-up-close" aria-controls="trail-up-close" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M17 5h6v6M11 23H5v-6M23 5l-7 7M5 23l7-7"/></svg><span>Up close</span><b class="count">5</b></button>
-            <button class="plank" type="button" role="tab" id="plank-island" aria-controls="trail-island" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="10" width="21" height="8" rx="4"/><path d="M9 14h.01M14 14h.01M19 14h.01" stroke-width="2.6"/></svg><span>The island</span><b class="count">4</b></button>
-            <button class="plank" type="button" role="tab" id="plank-everyday" aria-controls="trail-everyday" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="5.5" width="21" height="17" rx="4"/><rect x="13.5" y="13" width="7.5" height="6" rx="1.5"/></svg><span>Everyday</span><b class="count">7</b></button>
-            <button class="plank" type="button" role="tab" id="plank-private" aria-controls="trail-private" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 3.5l8.5 3.2v6.6c0 5.2-3.6 9.4-8.5 11.2-4.9-1.8-8.5-6-8.5-11.2V6.7z"/><path d="M10.6 14.2l2.4 2.4 4.4-4.8"/></svg><span>Private by design</span><b class="count">5</b></button>
-            <button class="plank" type="button" role="tab" id="plank-tools" aria-controls="trail-tools" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 6c.9 4.7 3.3 7.1 8 8-4.7.9-7.1 3.3-8 8-.9-4.7-3.3-7.1-8-8 4.7-.9 7.1-3.3 8-8z"/></svg><span>Power tools</span><b class="count">6</b></button>
-            <button class="plank" type="button" role="tab" id="plank-mac" aria-controls="trail-mac" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="5.5" y="6.5" width="17" height="12" rx="2"/><path d="M3 21.5h22"/></svg><span>Made for the Mac</span><b class="count">6</b></button>
+            <button class="plank" type="button" role="tab" id="plank-canvas" aria-controls="trail-canvas" aria-selected="true"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="4.5" width="21" height="19" rx="4"/><rect x="7.5" y="8.5" width="5" height="6" rx="1.2"/><rect x="15.5" y="10.5" width="5" height="6" rx="1.2"/><rect x="9.5" y="16.5" width="4" height="4" rx="1"/></svg><span>The canvas</span><b class="count">9</b></button>
+            <button class="plank" type="button" role="tab" id="plank-spaces" aria-controls="trail-spaces" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="8.5" width="15" height="15" rx="3.5"/><path d="M9.5 4.5h11a3 3 0 0 1 3 3v11"/></svg><span>Spaces &amp; Peek</span><b class="count">7</b></button>
+            <button class="plank" type="button" role="tab" id="plank-shared" aria-controls="trail-shared" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="10.5" cy="10.5" r="4.5"/><circle cx="19.5" cy="12" r="3.5"/><path d="M3.5 23c.6-4.2 3.4-6.5 7-6.5s6.4 2.3 7 6.5M18.5 17.5c3 0 5.4 1.9 6 5.5"/></svg><span>Shared Spaces</span><b class="count">5</b></button>
+            <button class="plank" type="button" role="tab" id="plank-up-close" aria-controls="trail-up-close" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M17 5h6v6M11 23H5v-6M23 5l-7 7M5 23l7-7"/></svg><span>Up close</span><b class="count">8</b></button>
+            <button class="plank" type="button" role="tab" id="plank-island" aria-controls="trail-island" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="10" width="21" height="8" rx="4"/><path d="M9 14h.01M14 14h.01M19 14h.01" stroke-width="2.6"/></svg><span>The island</span><b class="count">5</b></button>
+            <button class="plank" type="button" role="tab" id="plank-everyday" aria-controls="trail-everyday" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="3.5" y="5.5" width="21" height="17" rx="4"/><rect x="13.5" y="13" width="7.5" height="6" rx="1.5"/></svg><span>Everyday</span><b class="count">8</b></button>
+            <button class="plank" type="button" role="tab" id="plank-private" aria-controls="trail-private" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 3.5l8.5 3.2v6.6c0 5.2-3.6 9.4-8.5 11.2-4.9-1.8-8.5-6-8.5-11.2V6.7z"/><path d="M10.6 14.2l2.4 2.4 4.4-4.8"/></svg><span>Private by design</span><b class="count">6</b></button>
+            <button class="plank" type="button" role="tab" id="plank-tools" aria-controls="trail-tools" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 6c.9 4.7 3.3 7.1 8 8-4.7.9-7.1 3.3-8 8-.9-4.7-3.3-7.1-8-8 4.7-.9 7.1-3.3 8-8z"/></svg><span>Power tools</span><b class="count">8</b></button>
+            <button class="plank" type="button" role="tab" id="plank-mac" aria-controls="trail-mac" aria-selected="false"><svg viewBox="0 0 28 28" aria-hidden="true"><rect x="5.5" y="6.5" width="17" height="12" rx="2"/><path d="M3 21.5h22"/></svg><span>Made for the Mac</span><b class="count">8</b></button>
           </div>
           <div class="routes">
             <div class="route on" role="tabpanel" id="trail-canvas" aria-labelledby="plank-canvas" tabindex="0">
@@ -811,7 +815,9 @@
               <ul class="ways">
                 <li><h3>Every page is a card</h3><p>Pan and pinch across everything you have open. Each card is the page as you left it, sharp at any zoom.</p></li>
                 <li><h3>Branch off with <kbd>⌘</kbd>-click</h3><p>Browse inside a card like you would in a tab. <kbd>⌘</kbd>-click a link instead, and it opens as a new card beside its page, joined by a trail.</p></li>
-                <li><h3>Threads you can walk</h3><p>Click a trail to cross it, or step down a thread with <kbd>⌘↓</kbd> and back up with <kbd>⌘↑</kbd>. Tidy Thread lines a page's children up beside it.</p></li>
+                <li><h3>Threads you can walk</h3><p>Click a trail to cross it, or step down a thread with <kbd>⌘↓</kbd> and back up with <kbd>⌘↑</kbd>. A dashed trail leads to another site, and Tidy Thread lines a page's children up beside it.</p></li>
+                <li><h3>Tidy</h3><p>Select some cards and they sort into named groups by topic, with AI if you've set it up and on your Mac if you haven't. One <kbd>⌘Z</kbd> puts them all back.</p></li>
+                <li><h3>Hands like a design tool</h3><p><kbd>⌘</kbd> and a scroll zooms. Hold <kbd>⇧</kbd> as you drag and a card keeps to one axis and lines up with its neighbours, with guides to show it.</p></li>
                 <li><h3>Find by what a page says</h3><p>Search titles, addresses and the words on the page itself, indexed as you browse. Return flies you straight there.</p></li>
                 <li><h3>Old pages fold into stacks</h3><p>Cards you haven't touched in a while fold into stacks you can flip through. Nothing gets thrown away.</p></li>
                 <li><h3>Room for a crowd</h3><p>In our tests, a single Mac kept 50,000 cards fluid. Pages only go live when you open them, never just because you zoomed in.</p></li>
@@ -823,10 +829,21 @@
               <ul class="ways">
                 <li><h3>Separate canvases, separate logins</h3><p>Each new Space gets its own website data, so you can be signed in to the same site as different people in Work and Personal.</p></li>
                 <li><h3>Make each Space yours</h3><p>Give it a name, an icon or emoji, and its own colours. Switch with <kbd>⌘1</kbd> to <kbd>⌘9</kbd>, and move cards between Spaces.</p></li>
+                <li><h3>Signs at the edge</h3><p>Your Spaces stand along the window's edge like trail signs: a board for the one you're in, and arrows pointing to the rest.</p></li>
                 <li><h3>A Private Space that forgets</h3><p><kbd>⌘0</kbd> opens a Space that's never saved or synced, with no AI. Clear it and it's gone.</p></li>
                 <li><h3>One canvas, many windows</h3><p>Every window shows the same canvas, with one Space up in each. Pick a Space that's up in another window and the two swap.</p></li>
                 <li><h3>Peek before it's a card</h3><p>A link from Mail, Slack or anywhere else opens in a small window over what you're doing. <kbd>Esc</kbd> closes it and keeps nothing.</p></li>
                 <li><h3>Send it to the right Space</h3><p>One button turns a peek into a card, in whichever Space you pick. Sign in while peeking and you stay signed in.</p></li>
+              </ul>
+            </div>
+            <div class="route" role="tabpanel" id="trail-shared" aria-labelledby="plank-shared" tabindex="0">
+              <p class="blurb">A Space you can walk around in together.</p>
+              <ul class="ways">
+                <li><h3>Share a Space by link</h3><p>Send the link and people join. Each gets a role: Can view, Can add, Can edit or Co-admin.</p></li>
+                <li><h3>See who's there</h3><p>Everyone's picture sits in the island, and their pointer crosses the canvas with their name on it, in their own colour.</p></li>
+                <li><h3>Chat in the Space</h3><p>A button beside the pictures opens the chat in the island. Everyone can post, and no one can change someone else's words.</p></li>
+                <li><h3>Your browsing stays yours</h3><p>Before you share, Park shows what members will see and flags any address that may hold something private. Your logins, history and other Spaces stay on your Mac, and so does browsing on from a shared card.</p></li>
+                <li><h3>Sealed in the link</h3><p>What's shared is sealed before it leaves your Mac, with a key that rides in the link where no server sees it. Removing someone replaces the link at once.</p></li>
               </ul>
             </div>
             <div class="route" role="tabpanel" id="trail-up-close" aria-labelledby="plank-up-close" tabindex="0">
@@ -834,8 +851,11 @@
               <ul class="ways">
                 <li><h3>Pinch to get closer</h3><p>Pinch toward a card and it snaps into its cozy frame with a haptic tick. Keep pinching and the page goes full.</p></li>
                 <li><h3>Pan into a page</h3><p>Bring a card to the middle at reading size and it shows its frame, then opens when you let go.</p></li>
+                <li><h3>Click like the Finder</h3><p>A click selects a card. <kbd>Space</kbd> opens it at cozy, a double-click goes full, and <kbd>Esc</kbd> steps back out.</p></li>
                 <li><h3>Cozy keeps the context</h3><p>The canvas blurs around the page, and the site's icon, title and description sit beside it. Set your persona to Designer or Developer and its colours and fonts join them. Click a colour to copy its hex.</p></li>
                 <li><h3>Full, framed by the canvas</h3><p>The page fills the window with a sliver of canvas around it, lifted off with a soft shadow.</p></li>
+                <li><h3>Side by side</h3><p>Select a few cards and press Return. Two split, four make a quad, and every page stays live. Close them one at a time and the rest make room.</p></li>
+                <li><h3>Flip through with <kbd>⌃⇥</kbd></h3><p>Every card in the Space comes up in a row over the page you're on, without leaving it.</p></li>
                 <li><h3>Snapping is optional</h3><p>Prefer free zoom? Switch snapping off, and pages settle to the nearest level when your fingers stop.</p></li>
               </ul>
             </div>
@@ -844,6 +864,7 @@
               <ul class="ways">
                 <li><h3>One field to find, ask or go</h3><p>Find cards, search your history, type an address or ask AI. Its buttons change with the moment, down to a key on sign-in forms.</p></li>
                 <li><h3>Put it anywhere</h3><p>Drag it to the top or bottom, left, centre or right, and it snaps into place. With springy motion on, it bends like jelly as you drag.</p></li>
+                <li><h3>Steps aside</h3><p>At rest it's just its bar. With a page at full it shrinks to a line at the edge, and comes back as your pointer nears.</p></li>
                 <li><h3>No more pop-ups</h3><p>Dialogs, downloads, camera and microphone requests and confirmations open in the island's glass, not system windows. <kbd>Esc</kbd> closes them.</p></li>
                 <li><h3><kbd>⌘K</kbd> for everything</h3><p>Jump to any card in any Space, or run a command.</p></li>
               </ul>
@@ -853,6 +874,7 @@
               <ul class="ways">
                 <li><h3>Video in a mini player</h3><p>Leave a card while a long video plays and it carries on in a corner player. It's the same page, so nothing reloads.</p></li>
                 <li><h3>See what's making sound</h3><p>A card playing audio shows a little music bar with notes rising off it. Click to pause.</p></li>
+                <li><h3>Music with its own bar</h3><p>Pin a card's music and it gets a bar of its own, with the track, a seek line and controls. It plays on as you change Spaces.</p></li>
                 <li><h3>Maps keep the trackpad</h3><p>Pages that pan and zoom themselves get your pinch and scroll, and Park remembers the site. <kbd>⌘</kbd> with a pinch always moves the canvas.</p></li>
                 <li><h3>Sign-in pop-ups behave</h3><p>“Sign in with…” windows float over their own page instead of opening a stray card.</p></li>
                 <li><h3>Camera and mic, per site</h3><p>Sites ask in the island, and Park remembers your answer for that site.</p></li>
@@ -865,8 +887,9 @@
               <ul class="ways">
                 <li><h3>A password manager in the island</h3><p>Fill and save logins, even inside frames, and generate strong passwords. Import from Chrome, Safari, Firefox, 1Password, Bitwarden or LastPass.</p></li>
                 <li><h3>Passwords never touch the server</h3><p>They live in your Keychain and travel between your Macs by iCloud Keychain. Touch ID guards every reveal, copy and export.</p></li>
-                <li><h3>Sealed sync</h3><p>Sign in with an emailed link or code and your canvas follows you to every Mac, sealed on the device with a key the server never holds.</p></li>
+                <li><h3>Sealed sync</h3><p>Sign in with Apple, or an emailed link or code, and your canvas follows you to every Mac, sealed on the device with a key the server never holds.</p></li>
                 <li><h3>Trackers blocked</h3><p>Built-in blocking with EasyList and EasyPrivacy, and a per-site switch when you need it.</p></li>
+                <li><h3>Your call, in one place</h3><p>Privacy and Security clears your browsing data, sets how long history stays, upgrades sites to HTTPS and warns about fraud. Usage stats are off unless you turn them on, and never include addresses or titles.</p></li>
                 <li><h3>Careful by default</h3><p>Passwords are never filled on unencrypted pages, private pages are never indexed, and web content is kept away from your files.</p></li>
               </ul>
             </div>
@@ -878,6 +901,8 @@
                 <li><h3>Asks before anything leaves</h3><p>Park shows exactly what would be sent and asks first. AI never runs in the Private Space.</p></li>
                 <li><h3>The Workshop: Design</h3><p><kbd>⌥⌘E</kbd> opens a panel beside the page, with its colours, fonts and spacing as editable rows at desktop, tablet and phone widths. Copy your changes out when you're done.</p></li>
                 <li><h3>The Workshop: Developer</h3><p>The panel's other side shows the page's DOM, console and network requests. <kbd>⌥⌘I</kbd> goes straight there.</p></li>
+                <li><h3>Keep it as a Take</h3><p>Your edits stay with the page as its Take, even after a reload. Keep one as a card beside the page, on a trail, and try another.</p></li>
+                <li><h3>Ask at the bench</h3><p>Ask your model to change the page. Each change lands on the undo like your own, and variations fan out as cards.</p></li>
                 <li><h3>Capture a page</h3><p>Grab the whole page, or drag a frame over just the part you want.</p></li>
               </ul>
             </div>
@@ -888,6 +913,8 @@
                 <li><h3>A canvas of glass</h3><p>Frosted or sheer glass over your desktop, or solid. Light, dark or system, in a warm, neutral or cool tone.</p></li>
                 <li><h3>Motion you choose</h3><p>Springy, precise or reduced. Springy keeps its momentum when you change your mind mid-flight.</p></li>
                 <li><h3>Yours to tune</h3><p>Rebind any keyboard shortcut and pick from 28 app icons.</p></li>
+                <li><h3>Park Pass</h3><p>A membership card in Settings with your name, your cards and your Spaces. It tilts, it shuffles, and it shares.</p></li>
+                <li><h3>Updates itself</h3><p>New builds download in the background and install the next time you quit.</p></li>
                 <li><h3>Accessible</h3><p>The canvas is reachable with VoiceOver and the keyboard, and reduced motion is honoured throughout.</p></li>
                 <li><h3>In ten languages</h3><p>English, French, Spanish, German, Brazilian Portuguese, Italian, Japanese, Simplified Chinese, Korean and Icelandic, with every word in the app localised.</p></li>
               </ul>
